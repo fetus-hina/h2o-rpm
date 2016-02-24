@@ -1,0 +1,6 @@
+#!/usr/bin/expect -f
+   
+spawn rpmsign --resign --key-id=C9F367D2 {*}$argv
+expect -exact "Enter pass phrase: "
+send -- "Secret passphrase\r"
+expect eof
