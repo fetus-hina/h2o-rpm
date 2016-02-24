@@ -20,8 +20,8 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 1.6.2
-Release: 1%{?dist}
+Version: 1.7.0
+Release: 3%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v%{version}.tar.gz
 Source1: index.html
@@ -29,6 +29,8 @@ Source2: h2o.logrotate
 Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
+Patch1: fastcgi-cgi.patch
+Patch2: mruby.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -70,6 +72,8 @@ which allow you to build your own software using H2O.
 
 %prep
 %setup -q
+%patch1 -p0
+%patch2 -p1
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -93,6 +97,7 @@ rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
 
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}
+
 install -m 644 -p libh2o-evloop.a \
         $RPM_BUILD_ROOT%{_libdir}/libh2o-evloop.a
 
@@ -237,8 +242,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_bindir}/h2o
 %{_datadir}/h2o/annotate-backtrace-symbols
+%{_datadir}/h2o/fastcgi-cgi
 %{_datadir}/h2o/fetch-ocsp-response
 %{_datadir}/h2o/kill-on-close
+%{_datadir}/h2o/mruby/htpasswd.rb
 %{_datadir}/h2o/setuidgid
 %{_datadir}/h2o/start_server
 
@@ -264,6 +271,41 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Mon Feb 22 2016 AIZAWA Hina <hina@bouhime.com> - 1.7.0-3
+- Install share/h2o/mruby/htpasswd.rb to use basic authentication #798
+
+* Fri Feb 19 2016 AIZAWA Hina <hina@bouhime.com> - 1.7.0-2
+- Add fastcgi-cgi support #791
+
+* Fri Feb  5 2016 AIZAWA Hina <hina@bouhime.com> - 1.7.0-1
+- Update to 1.7.0
+  - [core] support for wildcard hostnames #634 (Kazuho Oku)
+  - [core][file] preserve query paramaters upon redirection to a directory #690 (Tatsuhiro Tsujikawa)
+  - [core] use uppercase letters in URI-escape sequence #695 (Kazuho Oku)
+  - [core] forbid duplicates in hosts section #709 (Kazuho Oku)
+  - [fastcgi] add support for CGI #618 (Kazuho Oku)
+  - [fastcgi] drop transfer-encoding header #641 (Kazuho Oku)
+  - [file] fix a bug that caused file.mime.addtypes to fail setting the attributes of a content-type #731 (Kazuho Oku)
+  - [http2] fix broken PUSH_PROMISE frames being sent under high pressure #734 #736 (Kazuho Oku)
+  - [mruby] provide env["rack.input"] #515 #638 #644 (Masayoshi Takahashi, Kazuho Oku)
+  - [mruby] HTTP client API #637 #643 (Kazuho Oku)
+  - [mruby] dump the ruby source on error #631 (Kazuho Oku)
+  - [mruby] provide access to $H2O_ROOT #629 (Kazuho Oku)
+  - [mruby] change mrb_int to 64-bit on 64-bit systems #639 (Kazuho Oku)
+  - [mruby] concatenate request headers having same name #666 (Kazuho Oku)
+  - [mruby] bundle mruby-errno, mruby-file-stat #675 (Kazuho Oku)
+  - [mruby] refrain from building mruby handler by default if mkmf (part of ruby dev files) is not found #710 (Kazuho Oku)
+  - [proxy] detect upstream close of pooled socket before reuse #679 (Kazuho Oku)
+  - [reproxy] add support for relative URI #712 (Kazuho Oku)
+  - [ssl] turn on neverbleed by default #633 (Kazuho Oku)
+  - [libh2o] fix memory leaks during destruction #724 (greatwar)
+  - [libh2o] simplify vector operations #715 #735 (Domingo Alvarez Duarte)
+  - [misc] support basic authentication using .htpasswd #624 (Kazuho Oku)
+  - [misc] fix build error when an older version of H2O is installed aside an external dependency #718 #722 #736 (Kazuho Oku)
+
+* Tue Jan 26 2016 AIZAWA Hina <hina@bouhime.com> - 1.6.3-1
+- Update to 1.6.3
+
 * Wed Jan 13 2016 Tatsushi Demachi <tdemachi@gmail.com> - 1.6.2-1
 - Update to 1.6.2
 
