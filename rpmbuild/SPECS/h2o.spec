@@ -20,8 +20,8 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 1.7.0
-Release: 3%{?dist}
+Version: 1.7.1
+Release: 1%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v%{version}.tar.gz
 Source1: index.html
@@ -29,8 +29,6 @@ Source2: h2o.logrotate
 Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
-Patch1: fastcgi-cgi.patch
-Patch2: mruby.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -72,8 +70,6 @@ which allow you to build your own software using H2O.
 
 %prep
 %setup -q
-%patch1 -p0
-%patch2 -p1
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -102,8 +98,8 @@ install -m 644 -p libh2o-evloop.a \
         $RPM_BUILD_ROOT%{_libdir}/libh2o-evloop.a
 
 %ifarch x86_64
-mv $RPM_BUILD_ROOT%{_prefix}/lib/libh2o-evloop.so \
-        $RPM_BUILD_ROOT%{_libdir}/libh2o-evloop.so
+mv $RPM_BUILD_ROOT%{_prefix}/lib/libh2o-evloop.so* \
+        $RPM_BUILD_ROOT%{_libdir}/
 
 rm -rf $RPM_BUILD_ROOT%{_prefix}/lib
 %endif
@@ -266,11 +262,30 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
+%{_libdir}/libh2o-evloop.so.0.9.22
+%{_libdir}/libh2o-evloop.so.0.9
 %{_libdir}/libh2o-evloop.so
 %{_includedir}/h2o.h
 %{_includedir}/h2o
 
 %changelog
+* Fri Mar 11 2016 AIZAWA Hina <hina@bouhime.com> - 1.7.1-1
+- Update to 1.7.1
+  - [core] fix incorrect line no. reported in case of YAML syntax error #785 (Kazuho Oku)
+  - [core] fix build issue / memory leak when the poll backend is used #777 #787 (devlearner)
+  - [core] when building, repect EXTRA_LIBS passed from command line #793 (Kazuho Oku)
+  - [core] fix memory leaks during start-up #792 (Domingo Alvarez Duarte)
+  - [core] fix stability issue when receiving a signal #799 (Kazuho Oku)
+  - [fastcgi] fix off-by-one buffer overflow #762 (Domingo Alvarez Duarte)
+  - [fastcgi][mruby] install missing script files #791 #798 (AIZAWA Hina)
+  - [mruby] truncate body to the size specified by content-length #778 (Kazuho Oku)
+  - [mruby] fix error when reading a ruby script >= 64K #824 (Domingo Alvarez Duarte)
+  - [proxy] fix I/O error when transferring files over 2GB on FreeBSD / OS X #821 #834 (Kazuho Oku)
+  - [ssl] bugfix: use of session ticket not disabled even when configured to #819 #835 (Kazuho Oku)
+  - [libh2o] provide pkg-config .pc files #743 (OGINO Masanori)
+  - [libh2o] include version numbers in the .so filename #794 (Matt Clarkson)
+  - [doc] refine documentation #601 #746 #748 #766 #781 #811
+
 * Mon Feb 22 2016 AIZAWA Hina <hina@bouhime.com> - 1.7.0-3
 - Install share/h2o/mruby/htpasswd.rb to use basic authentication #798
 
