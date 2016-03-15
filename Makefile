@@ -1,6 +1,6 @@
-SOURCE_ARCHIVE := v1.7.1.tar.gz
+SOURCE_ARCHIVE := v2.0.0-beta1.tar.gz
 TARGZ_FILE := h2o.tar.gz
-IMAGE_NAME := h2o-package
+IMAGE_NAME := h2o-next-package
 centos6: IMAGE_NAME := $(IMAGE_NAME)-ce6
 centos7: IMAGE_NAME := $(IMAGE_NAME)-ce7
 fedora: IMAGE_NAME := $(IMAGE_NAME)-fc23
