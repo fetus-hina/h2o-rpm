@@ -21,9 +21,9 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.0.0 
-Release: 0.beta1.1%{?dist}
+Release: 0.beta2.1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.0.0-beta1.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.0.0-beta2.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -69,7 +69,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.0.0-beta1
+%setup -q -n h2o-2.0.0-beta2
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -244,6 +244,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/h2o/mruby/htpasswd.rb
 %{_datadir}/h2o/setuidgid
 %{_datadir}/h2o/start_server
+%{_datadir}/h2o/status/index.html
 
 %{_datadir}/doc
 
@@ -262,15 +263,23 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.10.0-beta1
+%{_libdir}/libh2o-evloop.so.0.10.0-beta2
 %{_libdir}/libh2o-evloop.so.0.10
 %{_libdir}/libh2o-evloop.so
 %{_includedir}/h2o.h
 %{_includedir}/h2o
 
 %changelog
-* Tue Mar 15 2016 AIZAWA Hina <hina@bouhime.com> - 1.8.0-0.beta1.1
-- Update to 1.8.0-beta1
+* Wed Mar 23 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-0.beta2.1
+- Update to 2.0.0-beta2
+  - [compress] fix potential SEGV when encoding brotli #849 (Kazuho Oku)
+  - [compress][expires] refrain from setting redundant `cache-control` tokens #846 (Kazuho Oku)
+  - [mruby] add $H2O_ROOT/share/h2o/mruby to the default load path #851 (Kazuho Oku)
+  - [status] introduce the status handler #848 (Kazuho Oku)
+  - [misc] install examples #850 (James Rouzier)
+
+* Tue Mar 15 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-0.beta1.1
+- Update to 2.0.0-beta1
   - [core][breaking change] do not automatically append / to path-level configuration #820 (Kazuho Oku)
   - [core] support << in configuration file #786 (Kazuho Oku)
   - [access-log] add directive for logging protocol-specific values #801 (Kazuho Oku)
