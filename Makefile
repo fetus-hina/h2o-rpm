@@ -4,14 +4,16 @@ IMAGE_NAME := h2o-next-package
 centos6: IMAGE_NAME := $(IMAGE_NAME)-ce6
 centos7: IMAGE_NAME := $(IMAGE_NAME)-ce7
 fedora: IMAGE_NAME := $(IMAGE_NAME)-fc23
+rawhide: IMAGE_NAME := $(IMAGE_NAME)-rawhide
 opensuse: IMAGE_NAME := $(IMAGE_NAME)-suse13.2
 
-.PHONY: all clean centos6 centos7 fedora opensuse
+.PHONY: all clean centos6 centos7 fedora rawhide opensuse
 
-all: centos6 centos7 fedora opensuse
+all: centos6 centos7 fedora rawhide opensuse
 centos6: centos6.build
 centos7: centos7.build
 fedora: fedora.build
+rawhide: rawhide.build
 opensuse: opensuse.build
 
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
@@ -37,4 +39,5 @@ clean:
 	docker images | grep -q $(IMAGE_NAME)-ce6 && docker rmi $(IMAGE_NAME)-ce6 || true
 	docker images | grep -q $(IMAGE_NAME)-ce7 && docker rmi $(IMAGE_NAME)-ce7 || true
 	docker images | grep -q $(IMAGE_NAME)-fc23 && docker rmi $(IMAGE_NAME)-fc23 || true
+	docker images | grep -q $(IMAGE_NAME)-rawhide && docker rmi $(IMAGE_NAME)-rawhide || true
 	docker images | grep -q $(IMAGE_NAME)-suse13.2 && docker rmi $(IMAGE_NAME)-suse13.2 || true
