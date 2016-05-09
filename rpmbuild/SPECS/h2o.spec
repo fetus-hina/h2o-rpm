@@ -21,9 +21,9 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.0.0 
-Release: 0.beta3.1%{?dist}
+Release: 0.beta4.1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.0.0-beta3.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.0.0-beta4.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -69,7 +69,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.0.0-beta3
+%setup -q -n h2o-2.0.0-beta4
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -245,6 +245,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_bindir}/h2o
 %{_datadir}/h2o/annotate-backtrace-symbols
+%{_datadir}/h2o/ca-bundle.crt
 %{_datadir}/h2o/fastcgi-cgi
 %{_datadir}/h2o/fetch-ocsp-response
 %{_datadir}/h2o/kill-on-close
@@ -270,7 +271,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.10.0-beta3
+%{_libdir}/libh2o-evloop.so.0.10.0-beta4
 %{_libdir}/libh2o-evloop.so.0.10
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
@@ -279,6 +280,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Tue May  9 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-0.beta4.1
+- Update to 2.0.0-beta4
+  - [ssl] fix build issue on CentOS 7 (and others that have tolower defined as a macro) #901 (Kazuho Oku)
+
 * Mon May  9 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-0.beta3.1
 - Update to 2.0.0-beta3
   - [core] configurable server: header #877 (Frederik Deweerdt)
