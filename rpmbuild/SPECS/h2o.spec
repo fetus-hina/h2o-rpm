@@ -20,7 +20,7 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 1.7.1
+Version: 1.7.2
 Release: 1%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v%{version}.tar.gz
@@ -103,6 +103,13 @@ mv $RPM_BUILD_ROOT%{_prefix}/lib/libh2o-evloop.so* \
 
 rm -rf $RPM_BUILD_ROOT%{_prefix}/lib
 %endif
+
+mkdir -p $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
+install -m 644 -p libh2o.pc \
+        $RPM_BUILD_ROOT%{_libdir}/pkgconfig/libh2o.pc
+
+install -m 644 -p libh2o-evloop.pc \
+        $RPM_BUILD_ROOT%{_libdir}/pkgconfig/libh2o-evloop.pc
 
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/h2o
 install -m 644 -p $RPM_SOURCE_DIR/h2o.conf \
@@ -241,7 +248,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/h2o/fastcgi-cgi
 %{_datadir}/h2o/fetch-ocsp-response
 %{_datadir}/h2o/kill-on-close
-%{_datadir}/h2o/mruby/htpasswd.rb
+%{_datadir}/h2o/mruby
 %{_datadir}/h2o/setuidgid
 %{_datadir}/h2o/start_server
 
@@ -262,13 +269,24 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.9.22
+%{_libdir}/libh2o-evloop.so.0.9.23
 %{_libdir}/libh2o-evloop.so.0.9
 %{_libdir}/libh2o-evloop.so
+%{_libdir}/pkgconfig/libh2o.pc
+%{_libdir}/pkgconfig/libh2o-evloop.pc
 %{_includedir}/h2o.h
 %{_includedir}/h2o
 
 %changelog
+* Mon May  9 2016 AIZAWA Hina <hina@bouhime.com> - 1.7.2-1
+- Update to 1.7.2
+  - [core] fix crash when receiving SIGTERM during start-up #878 (Frederik Deweerdt)
+  - [core] spawn the configured number of DNS client threads #880 (Sean McArthur)
+  - [http2] accept capacity-bits attribute of the http2-casper configuration directive #882 (Satoh Hiroh)
+  - [ssl] update libressl to 2.2.7 #898 (Kazuho Oku)
+  - [ssl] fix memory leak when using TLS resumption with the memcached backend #856 (Kazuho Oku)
+  - [ssl] fix "undefined subroutine" error in the OCSP updater #872 (Masayuki Matsuki)
+
 * Fri Mar 11 2016 AIZAWA Hina <hina@bouhime.com> - 1.7.1-1
 - Update to 1.7.1
   - [core] fix incorrect line no. reported in case of YAML syntax error #785 (Kazuho Oku)
