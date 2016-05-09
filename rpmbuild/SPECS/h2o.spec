@@ -21,9 +21,9 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.0.0 
-Release: 0.beta2.1%{?dist}
+Release: 0.beta3.1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.0.0-beta2.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.0.0-beta3.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -69,7 +69,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.0.0-beta2
+%setup -q -n h2o-2.0.0-beta3
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -103,6 +103,13 @@ mv $RPM_BUILD_ROOT%{_prefix}/lib/libh2o-evloop.so* \
 
 rm -rf $RPM_BUILD_ROOT%{_prefix}/lib
 %endif
+
+mkdir -p $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
+install -m 644 -p libh2o.pc \
+        $RPM_BUILD_ROOT%{_libdir}/pkgconfig/libh2o.pc
+
+install -m 644 -p libh2o-evloop.pc \
+        $RPM_BUILD_ROOT%{_libdir}/pkgconfig/libh2o-evloop.pc
 
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/h2o
 install -m 644 -p $RPM_SOURCE_DIR/h2o.conf \
@@ -241,7 +248,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/h2o/fastcgi-cgi
 %{_datadir}/h2o/fetch-ocsp-response
 %{_datadir}/h2o/kill-on-close
-%{_datadir}/h2o/mruby/htpasswd.rb
+%{_datadir}/h2o/mruby
 %{_datadir}/h2o/setuidgid
 %{_datadir}/h2o/start_server
 %{_datadir}/h2o/status/index.html
@@ -263,13 +270,37 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.10.0-beta2
+%{_libdir}/libh2o-evloop.so.0.10.0-beta3
 %{_libdir}/libh2o-evloop.so.0.10
 %{_libdir}/libh2o-evloop.so
+%{_libdir}/pkgconfig/libh2o.pc
+%{_libdir}/pkgconfig/libh2o-evloop.pc
 %{_includedir}/h2o.h
 %{_includedir}/h2o
 
 %changelog
+* Mon May  9 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-0.beta3.1
+- Update to 2.0.0-beta3
+  - [core] configurable server: header #877 (Frederik Deweerdt)
+  - [core] fix crash when receiving SIGTERM during start-up #878 (Frederik Deweerdt)
+  - [core] spawn the configured number of DNS client threads #880 (Sean McArthur)
+  - [access-log][fastcgi][mruby] per-request environment variables #868 (Kazuho Oku)
+  - [access-log] fix memory leak during start-up #864 (Frederik Deweerdt)
+  - [http2] support for nopush attribute in the link rel=preload header #863 (Satoh Hiroh)
+  - [http2] support for push after delegation #866 (Kazuho Oku)
+  - [http2] accept capacity-bits attribute of the http2-casper configuration directive #882 (Satoh Hiroh)
+  - [http2] ignore push indications made by a pushed response #897 (Kazuho Oku)
+  - [proxy] add support for HTTPS #875 (Kazuho Oku)
+  - [proxy] add an configuration option to pass through x-forwarded-proto request header #883 (Kazuho Oku)
+  - [proxy] log error when upstream connection is unexpectedly closed #895 (Frederik Deweerdt)
+  - [ssl] update libressl to 2.2.7 #898 (Kazuho Oku)
+  - [ssl] add support for text-based memcache protocol #854 (Kazuho Oku)
+  - [ssl] fix memory leak when using TLS resumption with the memcached backend #856 (Kazuho Oku)
+  - [ssl] fix "undefined subroutine" error in the OCSP updater #872 (Masayuki Matsuki)
+  - [ssl] cap the number of OCSP updaters running concurrently #891 (Kazuho Oku)
+  - [libh2o] add API for obtaining the socket descriptor #886 (Frederik Deweerdt)
+  - [libh2o] add API to selectively disable automated I/O on reads and writes #890 (Frederik Deweerdt)
+
 * Wed Mar 23 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-0.beta2.1
 - Update to 2.0.0-beta2
   - [compress] fix potential SEGV when encoding brotli #849 (Kazuho Oku)
