@@ -1,6 +1,6 @@
 FROM centos:6
 ENV HOME /
-RUN yum update -y && yum install -y rpm-build redhat-rpm-config rpmdevtools cmake gcc-c++ tar openssl-devel bison centos-release-SCL && yum install -y ruby193 ruby193-ruby-devel
+RUN yum update -y && yum install -y rpm-build redhat-rpm-config rpmdevtools cmake gcc-c++ tar openssl-devel bison centos-release-scl-rh && yum install -y ruby193 ruby193-ruby-devel
 RUN rpmdev-setuptree
 RUN echo '%dist   .el6.jp3cki' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/
