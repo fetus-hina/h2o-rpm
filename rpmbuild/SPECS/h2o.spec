@@ -20,7 +20,7 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 1.7.2
+Version: 1.7.3
 Release: 1%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v%{version}.tar.gz
@@ -269,7 +269,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.9.23
+%{_libdir}/libh2o-evloop.so.0.9.24
 %{_libdir}/libh2o-evloop.so.0.9
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
@@ -278,6 +278,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Thu May 26 2016 AIZAWA Hina <hina@bouhime.com> - 1.7.3-1
+- Update to 1.7.3
+  - [security fix][http2] fix use-after-free on premature connection close (CVE-2016-4817) #920 (Frederik Deweerdt)
+  - [core] fix SIGBUS when temporary disk space is full #910 (Kazuho Oku)
+  - [mruby] do not drop link header #913 (Kazuho Oku)
+  - [mruby] fix memory leak during initialization #906 (Frederik Deweerdt)
+  - [mruby] fix race condition in mruby regex handler #908 (Kazuho Oku)
+  - [libh2o] fix crash in h2o_url_stringify #918 (Kazuho OKu)
+
 * Mon May  9 2016 AIZAWA Hina <hina@bouhime.com> - 1.7.2-1
 - Update to 1.7.2
   - [core] fix crash when receiving SIGTERM during start-up #878 (Frederik Deweerdt)
