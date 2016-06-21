@@ -21,9 +21,9 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.0.0 
-Release: 0.beta5.1%{?dist}
+Release: 1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.0.0-beta5.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.0.0.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -69,7 +69,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.0.0-beta5
+%setup -q -n h2o-2.0.0
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -271,8 +271,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.10.0-beta5
-%{_libdir}/libh2o-evloop.so.0.10
+%{_libdir}/libh2o-evloop.so.0.11.0
+%{_libdir}/libh2o-evloop.so.0.11
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
 %{_libdir}/pkgconfig/libh2o-evloop.pc
@@ -280,6 +280,47 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Wed Jun  1 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-1
+- Update to 2.0.0, folowing changes (including new features and bug fixes) from 1.7.3
+  - [core][breaking change] do not automatically append / to path-level configuration #820 (Kazuho Oku)
+  - [core] support << in configuration file #786 (Kazuho Oku)
+  - [core] configurable server: header #877 (Frederik Deweerdt)
+  - [core] add directive for customizing the path of temporary buffer files #911 (Kazuho Oku)
+  - [core] fix crash when receiving SIGTERM during start-up #878 (Frederik Deweerdt)
+  - [core] spawn the configured number of DNS client threads #880 (Sean McArthur)
+  - [access-log] add directive for logging protocol-specific values #801 (Kazuho Oku)
+  - [access-log][fastcgi][mruby] per-request environment variables #868 (Kazuho Oku)
+  - [access-log] fix memory leak during start-up #864 (Frederik Deweerdt)
+  - [compress] on-the-fly compression using brotli, as well as directives to tune the compression parameters #802, #924 (Kazuho Oku, Frederik Deweerdt)
+  - [compress][expires] refrain from setting redundant cache-control tokens #846 (Kazuho Oku)
+  - [file] file.file directive for mapping specific file #822 (Kazuho Oku)
+  - [file] send-compress directive (renamed from send-gzip) to support pre-compressed files using brotli #802 (Kazuho Oku)
+  - [file] cache open failures #836 (Kazuho Oku)
+  - [http2] support for nopush attribute in the link rel=preload header #863 (Satoh Hiroh)
+  - [http2] support for push after delegation #866 (Kazuho Oku)
+  - [http2] ignore push indications made by a pushed response #897 (Kazuho Oku)
+  - [http2] accept capacity-bits attribute of the http2-casper configuration directive #882 (Satoh Hiroh)
+  - [http2] avoid memcpy during HPACK huffman encoding #749 (Kazuho Oku)
+  - [http2] fix potential stall when http2-max-concurrent-requests-per-connection is set to a small number #912 (Kazuho Oku)
+  - [http2] refuse push a single resource more than once #903 (Kazuho Oku)
+  - [http2] fix assertion failure when receiving more data than expected during upgrade #922 (Frederik Deweerdt)
+  - [mruby] add $H2O_ROOT/share/h2o/mruby to the default load path #851 (Kazuho Oku)
+  - [proxy] add support for HTTPS #875 (Kazuho Oku)
+  - [proxy] add an configuration option to pass through x-forwarded-proto request header #883 (Kazuho Oku)
+  - [proxy] log error when upstream connection is unexpectedly closed #895 (Frederik Deweerdt)
+  - [ssl] update libressl to 2.2.7 #898 (Kazuho Oku)
+  - [ssl] support ECDH curves other than P-256 #841 (Kazuho Oku)
+  - [ssl] add support for text-based memcache protocol #854 (Kazuho Oku)
+  - [ssl] fix memory leak when using TLS resumption with the memcached backend #856 (Kazuho Oku)
+  - [ssl] fix "undefined subroutine" error in the OCSP updater #872 (Masayuki Matsuki)
+  - [ssl] cap the number of OCSP updaters running concurrently #891 (Kazuho Oku)
+  - [ssl] fix use-after-free when using session resumption with memcached backend #923 (Frederik Deweerdt)
+  - [libh2o] add API for obtaining the socket descriptor #886 (Frederik Deweerdt)
+  - [libh2o] add API to selectively disable automated I/O on reads and writes #890 (Frederik Deweerdt)
+  - [libh2o] bugfix: h2o_mem_swap swaps only the first 256 bytes #924 (Frederik Deweerdt)
+  - [status] introduce the status handler #848 (Kazuho Oku)
+  - [misc] install examples #850 (James Rouzier
+
 * Thu May 26 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-0.beta5.1
 - Update to 2.0.0-beta5
   - [security fix][http2] fix use-after-free on premature connection close (CVE-2016-4817) #920 (Frederik Deweerdt)
