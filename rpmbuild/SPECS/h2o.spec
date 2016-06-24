@@ -20,10 +20,10 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 2.0.0 
+Version: 2.0.1 
 Release: 1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.0.0.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.0.1.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -69,7 +69,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.0.0
+%setup -q -n h2o-2.0.1
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -271,7 +271,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.11.0
+%{_libdir}/libh2o-evloop.so.0.11.1
 %{_libdir}/libh2o-evloop.so.0.11
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
@@ -280,6 +280,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Fri Jun 24 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.1-1
+- Update to 2.0.1
+  - [fastcgi] fix internal server error when PHP returns a huge header #958 (Kazuho Oku)
+  - [http2] recognize link header containing multiple links #950 (Frederik Deweerdt)
+  - [libh2o] fix resource leaks upon startup failure #936 (David CARLIER)
+  - [libh2o] do not require linking to libbrotli externally #941 (Kazuho Oku)
+
 * Wed Jun  1 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-1
 - Update to 2.0.0, folowing changes (including new features and bug fixes) from 1.7.3
   - [core][breaking change] do not automatically append / to path-level configuration #820 (Kazuho Oku)
