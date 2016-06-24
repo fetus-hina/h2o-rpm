@@ -351,7 +351,7 @@ rm -rf $RPM_BUILD_ROOT
   - [mruby] fix race condition in mruby regex handler #908 (Kazuho Oku)
   - [libh2o] fix crash in h2o_url_stringify #918 (Kazuho OKu)
 
-* Tue May  9 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-0.beta4.1
+* Mon May  9 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.0-0.beta4.1
 - Update to 2.0.0-beta4
   - [ssl] fix build issue on CentOS 7 (and others that have tolower defined as a macro) #901 (Kazuho Oku)
 
