@@ -20,10 +20,10 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 2.0.1 
-Release: 1%{?dist}
+Version: 2.1.0 
+Release: 0.beta1.1%{?dist}%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.0.1.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.1.0-beta1.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -69,7 +69,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.0.1
+%setup -q -n h2o-2.1.0-beta1
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -271,8 +271,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.11.1
-%{_libdir}/libh2o-evloop.so.0.11
+%{_libdir}/libh2o-evloop.so.0.12.0-beta1
+%{_libdir}/libh2o-evloop.so.0.12
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
 %{_libdir}/pkgconfig/libh2o-evloop.pc
@@ -280,6 +280,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Fri Jun 24 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta1.1
+- Update to 2.1.0-beta1
+  - [http2][proxy] recognize link rel=preload headers in interim response as a trigger to push resources #916 (Kazuho Oku)
+  - [http2] add http2-push-preload directive to turn off H2 push being initiated by link rel=preload header #929 (Kazuho Oku)
+  - [http2][experimental] add feedback-based latency optimization mode #873 (Kazuho Oku)
+  - [status] collect and report HTTP statistics #893 (Frederik Deweerdt)
+  - [throttle] add new handler for throttling the response bandwidth #917 (Justin Zhu)
+  - [misc] provide crash-handler directive to customize crash logging #935 (Frederik Deweerdt)
+  - [libh2o] provide h2o_rand that calls the appropriate random function depending on the OS #927 (David CARLIER)
+  - [libh2o] do not require use of picohttpparser.h when using the HTTP/1 client #946 (Kazuho Oku)
+
 * Fri Jun 24 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.1-1
 - Update to 2.0.1
   - [fastcgi] fix internal server error when PHP returns a huge header #958 (Kazuho Oku)
