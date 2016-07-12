@@ -1,4 +1,5 @@
 SOURCE_ARCHIVE := v2.1.0-beta1.tar.gz
+LIBRESSL_ARCHIVE := libressl-2.4.1.tar.gz
 TARGZ_FILE := h2o.tar.gz
 IMAGE_NAME := h2o-next-package
 centos6: IMAGE_NAME := $(IMAGE_NAME)-ce6
@@ -19,7 +20,13 @@ opensuse: opensuse.build
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
 	curl -SL https://github.com/h2o/h2o/archive/$(SOURCE_ARCHIVE) -o rpmbuild/SOURCES/$(SOURCE_ARCHIVE)
 
-%.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE)
+rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE):
+	curl -SL http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/$(LIBRESSL_ARCHIVE) -o $@
+
+rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE).asc:
+	curl  -SL http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/$(LIBRESSL_ARCHIVE).asc -o $@
+
+%.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE).asc
 	[ -d $@.bak ] && rm -rf $@.bak || :
 	[ -d $@ ] && mv $@ $@.bak || :
 	cp Dockerfile.$* Dockerfile

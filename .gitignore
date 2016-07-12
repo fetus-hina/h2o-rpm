@@ -1,4 +1,5 @@
 *.build
 *.build.bak
 rpmbuild/SOURCES/*.tar.gz
+rpmbuild/SOURCES/*.tar.gz.asc
 Dockerfile

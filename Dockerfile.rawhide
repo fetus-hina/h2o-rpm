@@ -6,6 +6,7 @@ RUN rpmdev-setuptree
 RUN echo '%dist .jp3cki.fc25' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/
 RUN chown -R root:root /rpmbuild
+RUN gpg2 --import /rpmbuild/SOURCES/libressl.asc && gpg2 --verify /rpmbuild/SOURCES/libressl-*.tar.gz.asc
 RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
 RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
 CMD ["/bin/true"]

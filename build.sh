@@ -2,11 +2,8 @@
 
 set -eu
 
-docker pull centos:7
-docker pull centos:6
-docker pull fedora:rawhide
-
 for i in 7 6; do
+  docker pull centos:$i
   rm -rf centos${i}.build
   make centos${i}
   find centos${i}.build -type f -name '*.rpm' | xargs ./sign.exp
@@ -18,6 +15,7 @@ for i in 7 6; do
   createrepo /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-2.1/el${i}/src/
 done
 
+docker pull fedora:rawhide
 rm -rf rawhide.build
 make rawhide
 find rawhide.build -type f -name '*.rpm' | xargs ./sign.exp
