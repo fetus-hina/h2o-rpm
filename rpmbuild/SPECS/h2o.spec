@@ -21,7 +21,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.0.1 
-Release: 1%{?dist}
+Release: 2%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.0.1.tar.gz
 Source1: index.html
@@ -29,6 +29,7 @@ Source2: h2o.logrotate
 Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
+Patch996: 996.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -70,6 +71,7 @@ which allow you to build your own software using H2O.
 
 %prep
 %setup -q -n h2o-2.0.1
+%patch996 -p1
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -280,6 +282,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Thu Jul 21 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.1-2
+- [fastcgi] environment variable overwrites `HTTP_*` #996 (Kazuho Oku)
+
 * Fri Jun 24 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.1-1
 - Update to 2.0.1
   - [fastcgi] fix internal server error when PHP returns a huge header #958 (Kazuho Oku)
