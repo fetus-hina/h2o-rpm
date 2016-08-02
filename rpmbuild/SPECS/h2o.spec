@@ -20,16 +20,15 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 2.0.1 
-Release: 2%{?dist}
+Version: 2.0.2 
+Release: 1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.0.1.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.0.2.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
-Patch996: 996.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -70,8 +69,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.0.1
-%patch996 -p1
+%setup -q -n h2o-2.0.2
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -273,7 +271,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.11.1
+%{_libdir}/libh2o-evloop.so.0.11.2
 %{_libdir}/libh2o-evloop.so.0.11
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
@@ -282,6 +280,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Tue Aug  2 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.2-1
+- Update to 2.0.2
+ - [fastcgi] setenv should displace HTTP headers #996 (Kazuho Oku)
+ - [http2] fix buffer overrun #972 (Frederik Deweerdt)
+ - [misc] fix build error when libuv is not found #1008 (nextgenthemes)
+ - [misc] fix assertion failure when YAML alias and merge is used in certain way #1011 (Kazuho Oku)
+
 * Thu Jul 21 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.1-2
 - [fastcgi] environment variable overwrites `HTTP_*` #996 (Kazuho Oku)
 
