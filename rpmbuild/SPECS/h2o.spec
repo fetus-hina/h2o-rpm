@@ -21,7 +21,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.1.0 
-Release: 0.beta1.3%{?dist}
+Release: 0.beta1.4%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.1.0-beta1.tar.gz
 Source1: index.html
@@ -285,6 +285,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Fri Aug 26 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta1.4
+- Recompile with LibreSSL 2.4.2
+
 * Thu Jul 21 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta1.3
 - [fastcgi] environment variable overwrites `HTTP_*` #996 (Kazuho Oku)
 
