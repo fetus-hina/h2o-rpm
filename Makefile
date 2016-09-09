@@ -1,4 +1,4 @@
-SOURCE_ARCHIVE := v2.1.0-beta1.tar.gz
+SOURCE_ARCHIVE := v2.1.0-beta2.tar.gz
 LIBRESSL_ARCHIVE := libressl-2.4.2.tar.gz
 TARGZ_FILE := h2o.tar.gz
 IMAGE_NAME := h2o-next-package

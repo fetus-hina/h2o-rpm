@@ -21,16 +21,15 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.1.0 
-Release: 0.beta1.4%{?dist}
+Release: 0.beta2.1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.1.0-beta1.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.1.0-beta2.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
 Patch100: h2o-libressl.patch
-Patch996: 996.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -71,10 +70,9 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.1.0-beta1
+%setup -q -n h2o-2.1.0-beta2
 cp /rpmbuild/SOURCES/libressl-*.tar.gz ./misc/
 %patch100 -p0
-%patch996 -p1
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -101,13 +99,6 @@ mkdir -p $RPM_BUILD_ROOT/%{_libdir}
 
 install -m 644 -p libh2o-evloop.a \
         $RPM_BUILD_ROOT%{_libdir}/libh2o-evloop.a
-
-%ifarch x86_64
-mv $RPM_BUILD_ROOT%{_prefix}/lib/libh2o-evloop.so* \
-        $RPM_BUILD_ROOT%{_libdir}/
-
-rm -rf $RPM_BUILD_ROOT%{_prefix}/lib
-%endif
 
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
 install -m 644 -p libh2o.pc \
@@ -276,7 +267,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.12.0-beta1
+%{_libdir}/libh2o-evloop.so.0.12.0-beta2
 %{_libdir}/libh2o-evloop.so.0.12
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
@@ -285,6 +276,40 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Fri Sep  9 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta2.1
+- Update to 2.1.0-beta2
+ - [core] accept sequence of mappings for path-level configuration #1042 (Ichito Nagata)
+ - [core] provide tag to include other YAML files from the configuration file #1022 (Ichito Nagata)
+ - [fastcgi] setenv should displace HTTP headers #996 (Kazuho Oku)
+ - [file] don't use readdir_r on Linux, Solaris #1046 #1052 (Frederik Deweerdt, Kazuho Oku)
+ - [http1][http2] validate characters used in the headers #974 $1044 (Frederik Deweerdt, Kazuho Oku)
+ - [http1][http2] notify error downstream when an error occurred while generating a response #1031 (Frederik Deweerdt)
+ - [http2] add support for cache-digest header #967 #988 (Kazuho Oku)
+ - [http2] add support for H2 debug state #1019 (Ichito Nagata)
+ - [http2] fix buffer overrun #972 (Frederik Deweerdt)
+ - [http2] drop host header in HTTP/2 layer #973 #998 (Frederik Deweerdt, Kazuho Oku)
+ - [http2] fix assertion failure: sock->super._cb.write != ((void *)0)' failed #873 #966 #976 (Kazuho Oku)
+ - [http2] don't use etag for calculating casper cookie #986 (Kazuho Oku)
+ - [http2] fix negative error code sent when cancelling a pushed stream #1039 (Frederik Deweerdt)
+ - [http2] fix a bug that may cause a stream to stall #1040 (Frederik Deweerdt)
+ - [http2] fix a bug that reset the stream when receiving HEADERS after PRIORITY #1043 (Frederik Deweerdt)
+ - [mruby] add dos_detector mruby handler #1013 (Ichito Nagata)
+ - [mruby] add DSL for access control lists (acl) #1016 (Ichito Nagata)
+ - [mruby] add library for address-block-based access control #1038 (Ichito Nagata)
+ - [mruby] share mruby state and constants between handlers #1032 (Ichito Nagata)
+ - [mruby] fix mruby handler becoming unusable after failed connection in http_request on FreeBSD #1062 (Kazuho Oku)
+ - [proxy] add an option to prevent emiting x-forwarded-* headers #999 (Frederik Deweerdt)
+ - [proxy] add an option to connect to upstream using PROXY protocol #930 (Kazuho Oku)
+ - [proxy] don't escape : in URI path #977 (Frederik Deweerdt)
+ - [proxy] preserve received URLs as much as possible #985 (Frederik Deweerdt)
+ - [ssl] set add_lock callback to prevent unnecessary lock-add-unlock #983 (Roberto Guimaraes)
+ - [ssl] add support for OpenSSL 1.1.0 #1064 (Kazuho Oku)
+ - [status] report additional stats when jemalloc is used #1017 (Frederik Deweerdt)
+ - [misc] guess the default location of h2o.conf #969 (Davsid Carlier)
+ - [misc] fix build error when libuv is not found #1008 (nextgenthemes)
+ - [misc] fix assertion failure when YAML alias and merge is used in certain way #1011 (Kazuho Oku)
+ - [misc] allow to disable libuv even when it is found #995 (Frederik Deweerdt)
+
 * Fri Aug 26 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta1.4
 - Recompile with LibreSSL 2.4.2
 
