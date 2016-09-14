@@ -21,9 +21,9 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.1.0 
-Release: 0.beta2.1%{?dist}
+Release: 0.beta3.1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.1.0-beta2.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.1.0-beta3.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -70,7 +70,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.1.0-beta2
+%setup -q -n h2o-2.1.0-beta3
 cp /rpmbuild/SOURCES/libressl-*.tar.gz ./misc/
 %patch100 -p0
 
@@ -267,7 +267,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.12.0-beta2
+%{_libdir}/libh2o-evloop.so.0.12.0-beta3
 %{_libdir}/libh2o-evloop.so.0.12
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
@@ -276,6 +276,18 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Thu Sep 15 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta3.1
+- Update to 2.1.0-beta3
+ - [security fix][core] fix DoS attack vector CVE-2016-4864 #1077 (Frederik Deweerdt, Kazuho Oku)
+ - [core] enable TCP latency optimization by default #873 #1076 (Kazuho Oku)
+ - [core] fix broken support for TCP Fast Open in OS X #1065 (Ichito Nagata)
+ - [access-log] provide directive to emit request-level errors #1075 (Kazuho Oku)
+ - [proxy] cache TLS session used for upstream connections #1053 (Ichito Nagata)
+ - [proxy] escape NUL when rebuilding an URL #985 (Frederik Deweerdt)
+ - [misc] add font/woff2 to the default mime-type mapping #1066 (Andy Davies)
+ - [misc] mark JavaScript and JSON files as compressible by default #1067 (Kazuho Oku)
+ - [libh2o] fix crash on connect timeout #960 (disigma)
+
 * Fri Sep  9 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta2.1
 - Update to 2.1.0-beta2
  - [core] accept sequence of mappings for path-level configuration #1042 (Ichito Nagata)
