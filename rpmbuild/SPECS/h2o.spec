@@ -21,7 +21,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.1.0 
-Release: 0.beta3.1%{?dist}
+Release: 0.beta3.2%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.1.0-beta3.tar.gz
 Source1: index.html
@@ -276,6 +276,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Wed Sep 28 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta3.2
+- Recompile with LibreSSL 2.5.0
+
 * Thu Sep 15 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta3.1
 - Update to 2.1.0-beta3
  - [security fix][core] fix DoS attack vector CVE-2016-4864 #1077 (Frederik Deweerdt, Kazuho Oku)
