@@ -21,7 +21,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.1.0 
-Release: 0.beta3.2%{?dist}
+Release: 0.beta3.3%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.1.0-beta3.tar.gz
 Source1: index.html
@@ -29,6 +29,7 @@ Source2: h2o.logrotate
 Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
+Source6: h2o-tmpfile.conf
 Patch100: h2o-libressl.patch
 License: MIT
 Group: System Environment/Daemons
@@ -128,6 +129,9 @@ install -m 644 -p $RPM_SOURCE_DIR/h2o.service \
 	$RPM_BUILD_ROOT%{_unitdir}/h2o.service
 
 mkdir -p $RPM_BUILD_ROOT/run/h2o
+mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/tmpfiles.d
+install -m 644 -p $RPM_SOURCE_DIR/h2o-tmpfile.conf \
+        $RPM_BUILD_ROOT%{_prefix}/lib/tmpfiles.d/h2o.conf
 %else
 # install SYSV init stuff
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d
@@ -235,6 +239,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with_systemd}
 %{_unitdir}/h2o.service
+%{_prefix}/lib/tmpfiles.d/h2o.conf
 %else
 %{_sysconfdir}/rc.d/init.d/h2o
 %endif
@@ -276,6 +281,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Tue Nov 29 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta3.3
+- Fix /var/run configuration
+
 * Wed Sep 28 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta3.2
 - Recompile with LibreSSL 2.5.0
 
