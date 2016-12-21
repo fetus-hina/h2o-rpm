@@ -20,23 +20,24 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 2.0.4 
-Release: 1%{?dist}
+Version: 2.0.5
+Release: 2%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.0.4.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.0.5.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
+Patch100: h2o-libressl.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: cmake >= 2.8, gcc-c++, openssl-devel, pkgconfig
+BuildRequires: cmake >= 2.8, openssl-devel, pkgconfig, git
 %if 0%{?rhel} == 6
-BuildRequires: ruby193, bison
+BuildRequires: ruby193, bison, devtoolset-4-gcc-c++
 %else
-BuildRequires: ruby >= 1.9, bison
+BuildRequires: ruby >= 1.9, bison, gcc-c++
 %endif
 Requires: openssl, perl
 %if %{with_systemd}
@@ -69,9 +70,16 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.0.4
+%setup -q -n h2o-2.0.5
+cp /rpmbuild/SOURCES/libressl-*.tar.gz ./misc/
+%patch100 -p0
 
 %build
+%if 0%{?rhel} == 6
+source /opt/rh/devtoolset-4/enable
+X_SCLS="`scl enable devtoolset-4 'echo $X_SCLS'`"
+%endif
+
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
 make %{?_smp_mflags}
 
@@ -271,7 +279,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.11.4
+%{_libdir}/libh2o-evloop.so.0.11.5
 %{_libdir}/libh2o-evloop.so.0.11
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
@@ -280,6 +288,25 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Wed Dec 21 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.5-2
+- Build with libressl 2.5.0
+
+* Wed Dec 21 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.5-1
+- Update to 2.0.5
+ - [security fix] fix use-after-free vulnerability CVE-2016-7835 #1144 (Frederik Deweerdt, Kazuho Oku)
+ - [core] fix busy loop after receiving SIGTERM (linux) #1100 (Kazuho Oku, Frederik Deweerdt)
+ - [core] don't try to register kevent changes more than once (*BSD, OS X) #1113 (Ichito Nagata)
+ - [compress] set vary: accept-encoding upon negotiation failure of the compression method #1083 (Frederik Deweerdt)
+ - [file] add missing </ul> #1106 (Kazuho Oku)
+ - [http2] fix a bug that left connections open #1090 (Kazuho Oku)
+ - [http2] ignore PRIORITY frames that reference closed pushed streams #1105 (Frederik Deweerdt)
+ - [http2] add Secure attribute to the casper cookie #1134 (Kazuho Oku)
+ - [http2] permit use of HEADERS with a smaller stream ID than a preceding PRIORITY #1136 (Frederik Deweerdt, Kazuho Oku)
+ - [mruby] update mruby to HEAD #1135 (Kazuho Oku)
+ - [proxy] set content-length: 0 when receiving a zero-byte POST or PUT #1080 (Frederik Deweerdt)
+ - [ssl] update libressl to 2.4.4 #1127 (Kazuho Oku)
+ - [ssl] erase OCSP stapling data when the stapling updater returns a permanent failure #1117 (Kazuho Oku)
+
 * Thu Sep 15 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.4-1
 - Update to 2.0.4
  - [security fix][core] fix DoS attack vector CVE-2016-4864 #1077 (Frederik Deweerdt, Kazuho Oku)
