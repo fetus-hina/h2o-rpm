@@ -21,9 +21,9 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.1.0 
-Release: 0.beta3.3%{?dist}
+Release: 0.beta4.3%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.1.0-beta3.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.1.0-beta4.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -71,7 +71,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.1.0-beta3
+%setup -q -n h2o-2.1.0-beta4
 cp /rpmbuild/SOURCES/libressl-*.tar.gz ./misc/
 %patch100 -p0
 
@@ -272,7 +272,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.12.0-beta3
+%{_libdir}/libh2o-evloop.so.0.12.0-beta4
 %{_libdir}/libh2o-evloop.so.0.12
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
@@ -281,6 +281,26 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Wed Dec 21 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta4.1
+- Update to 2.1.0-beta4
+  - [security fix] fix use-after-free vulnerability CVE-2016-7835 #1144 (Frederik Deweerdt, Kazuho Oku)
+  - [core] fix busy loop after receiving SIGTERM (linux) #1100 (Kazuho Oku, Frederik Deweerdt)
+  - [core] don't try to register kevent changes more than once (*BSD, OS X) #1113 (Ichito Nagata)
+  - [compress] set vary: accept-encoding upon negotiation failure of the compression method #1083 (Frederik Deweerdt)
+  - [fastcgi] fix connection failure when fastcgi.spawn is used with an uid #1119 (Kazuho Oku)
+  - [file] more pre-defined MIME types #1103 (Joe Duarte)
+  - [file] add missing </ul> #1106 (Kazuho Oku)
+  - [http2] fix a bug that left connections open #1090 (Kazuho Oku)
+  - [http2] ignore PRIORITY frames that reference closed pushed streams #1105 (Frederik Deweerdt)
+  - [http2] add Secure attribute to the casper cookie #1134 (Kazuho Oku)
+  - [http2] permit use of HEADERS with a smaller stream ID than a preceding PRIORITY #1136 (Frederik Deweerdt, Kazuho Oku)
+  - [mruby] update mruby to HEAD #1135 (Kazuho Oku)
+  - [proxy] set content-length: 0 when receiving a zero-byte POST or PUT #1080 (Frederik Deweerdt)
+  - [proxy] turn on/off on-the-fly compression based on the x-compress-hint header #1085 (Frederik Deweerdt)
+  - ~~[ssl] update libressl to 2.4.4 #1127 (Kazuho Oku)~~
+  - [ssl] erase OCSP stapling data when the stapling updater returns a permanent failure #1117 (Kazuho Oku)
+  - [libh2o] install library files to the correct location #1116 (Frederik Deweerdt)
+
 * Tue Nov 29 2016 AIZAWA Hina <hina@bouhime.com> - 2.1.0-0.beta3.3
 - Fix /var/run configuration
 
