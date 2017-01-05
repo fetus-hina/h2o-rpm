@@ -20,10 +20,10 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 2.0.5
-Release: 2%{?dist}
+Version: 2.0.6
+Release: 1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.0.5.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.0.6.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -33,7 +33,7 @@ Patch100: h2o-libressl.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: cmake >= 2.8, openssl-devel, pkgconfig, git
+BuildRequires: cmake >= 2.8, openssl-devel, pkgconfig
 %if 0%{?rhel} == 6
 BuildRequires: ruby193, bison, devtoolset-4-gcc-c++
 %else
@@ -70,7 +70,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.0.5
+%setup -q -n h2o-2.0.6
 cp /rpmbuild/SOURCES/libressl-*.tar.gz ./misc/
 %patch100 -p0
 
@@ -279,7 +279,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.11.5
+%{_libdir}/libh2o-evloop.so.0.11.6
 %{_libdir}/libh2o-evloop.so.0.11
 %{_libdir}/libh2o-evloop.so
 %{_libdir}/pkgconfig/libh2o.pc
@@ -288,6 +288,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Thu Jan  5 2017 AIZAWA Hina <hina@bouhime.com> - 2.0.6-1
+- Update to 2.0.6
+  - [compress] fix the compression quality being ignored #1154 (Yannick Koechlin)
+  - [mruby] stop GIT access during build #1149 (parly)
+
 * Wed Dec 21 2016 AIZAWA Hina <hina@bouhime.com> - 2.0.5-2
 - Build with libressl 2.5.0
 
