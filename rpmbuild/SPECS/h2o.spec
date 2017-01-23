@@ -21,7 +21,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.1.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.1.0.tar.gz
 Source1: index.html
@@ -225,6 +225,15 @@ fi
 %else
 %systemd_postun
 %endif
+if [ $1 -ge 1 ]; then
+    systemctl status h2o >/dev/null 2>&1 || exit 0
+    systemctl reload h2o >/dev/null 2>&1 || echo "Binary upgrade failed, please check h2o's error.log"
+fi
+%else
+if [ $1 -ge 1 ]; then
+    service h2o status >/dev/null 2>&1 || exit 0
+    service h2o reload >/dev/null 2>&1 || echo "Binary upgrade failed, please check h2o's error.log"
+fi
 %endif
 
 %clean
@@ -281,6 +290,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Mon Jan 23 2017 AIZAWA Hina <hina@bouhine.com> - 2.1.0-2
+- Reload h2o daemon after upgrade
+
 * Wed Jan 18 2017 AIZAWA Hina <hina@bouhime.com> - 2.1.0-1
 - Update to 2.1.0
 
