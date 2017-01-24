@@ -1,5 +1,8 @@
 *.build
 *.build.bak
+/h2o-info.mk
+/repo
+Dockerfile
 rpmbuild/SOURCES/*.tar.gz
 rpmbuild/SOURCES/*.tar.gz.asc
-Dockerfile
+rpmbuild/SPECS/h2o.spec

@@ -1,32 +1,35 @@
-SOURCE_ARCHIVE := v2.1.0.tar.gz
-LIBRESSL_ARCHIVE := libressl-2.5.0.tar.gz
+SOURCE_ARCHIVE := h2o-master.tar.gz
+
 TARGZ_FILE := h2o.tar.gz
-IMAGE_NAME := h2o-next-package
-centos6: IMAGE_NAME := $(IMAGE_NAME)-ce6
-centos7: IMAGE_NAME := $(IMAGE_NAME)-ce7
-fedora: IMAGE_NAME := $(IMAGE_NAME)-fc23
-rawhide: IMAGE_NAME := $(IMAGE_NAME)-rawhide
-opensuse: IMAGE_NAME := $(IMAGE_NAME)-suse13.2
+IMAGE_NAME := h2o-nightly-package
 
-.PHONY: all clean centos6 centos7 fedora rawhide opensuse
+centos7: IMAGE_NAME := $(IMAGE_NAME)-el7
 
-all: centos6 centos7 fedora rawhide opensuse
-centos6: centos6.build
+.PHONY: all clean centos7
+
+all: h2o-info.mk centos7
 centos7: centos7.build
-fedora: fedora.build
-rawhide: rawhide.build
-opensuse: opensuse.build
 
-rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
-	curl -SL https://github.com/h2o/h2o/archive/$(SOURCE_ARCHIVE) -o rpmbuild/SOURCES/$(SOURCE_ARCHIVE)
+repo:
+	git clone https://github.com/h2o/h2o.git $@
 
-rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE):
-	curl -SL http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/$(LIBRESSL_ARCHIVE) -o $@
+h2o-info.mk: repo
+	./util/h2o-info.js > $@
 
-rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE).asc:
-	curl  -SL http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/$(LIBRESSL_ARCHIVE).asc -o $@
+rpmbuild/SOURCES/$(SOURCE_ARCHIVE): repo
+	tar -zcv --exclude-vcs -f $@ $<
 
-%.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE).asc
+rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk
+	cat rpmbuild/SPECS/h2o.spec.in \
+		| sed \
+			-e s/__RPM_REVISION__/$(RPM_REVISION)/ \
+			-e s/__H2O_VERSION__/$(H2O_VERSION)/ \
+			-e s/__H2O_VERSION_WO_DEV__/$(H2O_VERSION_WO_DEV)/ \
+			-e s/__LIBH2O_VERSION__/$(LIBH2O_VERSION)/ \
+			-e s/__LIBH2O_SO_VERSION__/$(LIBH2O_SO_VERSION)/ \
+		> $@
+
+%.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE)
 	[ -d $@.bak ] && rm -rf $@.bak || :
 	[ -d $@ ] && mv $@ $@.bak || :
 	cp Dockerfile.$* Dockerfile
@@ -42,9 +45,7 @@ rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE).asc:
 	docker images | grep -q $(IMAGE_NAME) && docker rmi $(IMAGE_NAME) || true
 
 clean:
-	rm -rf *.build.bak *.build tmp Dockerfile
-	docker images | grep -q $(IMAGE_NAME)-ce6 && docker rmi $(IMAGE_NAME)-ce6 || true
-	docker images | grep -q $(IMAGE_NAME)-ce7 && docker rmi $(IMAGE_NAME)-ce7 || true
-	docker images | grep -q $(IMAGE_NAME)-fc23 && docker rmi $(IMAGE_NAME)-fc23 || true
-	docker images | grep -q $(IMAGE_NAME)-rawhide && docker rmi $(IMAGE_NAME)-rawhide || true
-	docker images | grep -q $(IMAGE_NAME)-suse13.2 && docker rmi $(IMAGE_NAME)-suse13.2 || true
+	rm -rf *.build.bak *.build tmp Dockerfile h2o-info.mk repo rpmbuild/SPECS/h2o.spec
+	docker images | grep -q $(IMAGE_NAME)-el7 && docker rmi $(IMAGE_NAME)-el7 || true
+
+include h2o-info.mk

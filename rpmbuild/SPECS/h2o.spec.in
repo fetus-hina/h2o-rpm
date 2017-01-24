@@ -1,0 +1,161 @@
+%define docroot /var/www
+
+%global with_systemd 1
+%{?perl_default_filter}
+%global __requires_exclude perl\\(VMS|perl\\(Win32|perl\\(Server::Starter
+
+Summary: H2O - The optimized HTTP/1, HTTP/2 server
+Name: h2o-nightly
+Version: __H2O_VERSION_WO_DEV__
+Release: __RPM_REVISION__%{?dist}
+URL: https://h2o.examp1e.net/
+Source0: h2o-master.tar.gz
+Source1: index.html
+Source2: h2o.logrotate
+Source3: h2o.init
+Source4: h2o.service
+Source5: h2o.conf
+Source6: h2o-tmpfile.conf
+License: MIT
+Group: System Environment/Daemons
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRequires: cmake >= 2.8, gcc-c++, openssl-devel, pkgconfig, ruby >= 1.9, bison
+Requires: openssl, perl
+BuildRequires: systemd-units
+Requires(preun): systemd
+Requires(postun): systemd
+Requires(post): systemd
+
+%description
+H2O is a very fast HTTP server written in C. It can also be used
+as a library.
+
+%package devel
+Group: Development/Libraries
+Summary: Development interfaces for H2O
+Requires: openssl-devel
+Requires: h2o = %{version}-%{release}
+
+%description devel
+The h2o-devel package provides H2O library and its header files
+which allow you to build your own software using H2O.
+
+%prep
+%setup -q -n repo
+
+%build
+cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
+make %{?_smp_mflags}
+
+# for building shared library
+cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} -DBUILD_SHARED_LIBS=on .
+make %{?_smp_mflags}
+
+%install
+rm -rf %{buildroot}
+
+make DESTDIR=%{buildroot} install
+
+mkdir -p %{buildroot}/%{_libdir}
+
+install -m 644 -p libh2o-evloop.a \
+        %{buildroot}%{_libdir}/libh2o-evloop.a
+
+mkdir -p %{buildroot}/%{_libdir}/pkgconfig
+install -m 644 -p libh2o.pc \
+        %{buildroot}%{_libdir}/pkgconfig/libh2o.pc
+
+install -m 644 -p libh2o-evloop.pc \
+        %{buildroot}%{_libdir}/pkgconfig/libh2o-evloop.pc
+
+mkdir -p %{buildroot}%{_sysconfdir}/h2o
+install -m 644 -p $RPM_SOURCE_DIR/h2o.conf \
+        %{buildroot}%{_sysconfdir}/h2o/h2o.conf
+
+%if 0%{?suse_version} == 0
+# docroot
+mkdir -p %{buildroot}%{docroot}/html
+install -m 644 -p $RPM_SOURCE_DIR/index.html \
+        %{buildroot}%{docroot}/html/index.html
+%endif
+
+# Set up /var directories
+mkdir -p %{buildroot}%{_localstatedir}/log/h2o
+
+# Install systemd service files
+mkdir -p %{buildroot}%{_unitdir}
+install -m 644 -p $RPM_SOURCE_DIR/h2o.service \
+	%{buildroot}%{_unitdir}/h2o.service
+
+mkdir -p %{buildroot}/run/h2o
+mkdir -p %{buildroot}%{_prefix}/lib/tmpfiles.d
+install -m 644 -p $RPM_SOURCE_DIR/h2o-tmpfile.conf \
+        %{buildroot}%{_prefix}/lib/tmpfiles.d/h2o.conf
+
+# install log rotation stuff
+mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
+install -m 644 -p $RPM_SOURCE_DIR/h2o.logrotate \
+	%{buildroot}%{_sysconfdir}/logrotate.d/h2o
+
+%define sslcert %{_sysconfdir}/pki/tls/certs/localhost.crt
+%define sslkey %{_sysconfdir}/pki/tls/private/localhost.key
+
+%post
+%systemd_post h2o.service
+
+%preun
+%systemd_preun h2o.service
+
+%postun
+%systemd_postun
+if [ $1 -ge 1 ]; then
+    systemctl status h2o >/dev/null 2>&1 || exit 0
+    systemctl reload h2o >/dev/null 2>&1 || echo "Binary upgrade failed, please check h2o's error.log"
+fi
+
+%clean
+rm -rf %{buildroot}
+
+%files
+%defattr(-,root,root)
+
+%dir %{_sysconfdir}/h2o
+%config(noreplace) %{_sysconfdir}/h2o/h2o.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/h2o
+
+%{_unitdir}/h2o.service
+%{_prefix}/lib/tmpfiles.d/h2o.conf
+
+%{_bindir}/h2o
+%{_datadir}/h2o/annotate-backtrace-symbols
+%{_datadir}/h2o/ca-bundle.crt
+%{_datadir}/h2o/fastcgi-cgi
+%{_datadir}/h2o/fetch-ocsp-response
+%{_datadir}/h2o/kill-on-close
+%{_datadir}/h2o/mruby
+%{_datadir}/h2o/setuidgid
+%{_datadir}/h2o/start_server
+%{_datadir}/h2o/status/index.html
+
+%{_datadir}/doc
+
+%if 0%{?suse_version} == 0
+%dir %{docroot}
+%dir %{docroot}/html
+%config(noreplace) %{docroot}/html/index.html
+%endif
+
+%attr(0770,root,nobody) %dir /run/h2o
+%attr(0700,root,root) %dir %{_localstatedir}/log/h2o
+
+%files devel
+%{_libdir}/libh2o-evloop.a
+%{_libdir}/libh2o-evloop.so.__LIBH2O_VERSION__
+%{_libdir}/libh2o-evloop.so.__LIBH2O_SO_VERSION__
+%{_libdir}/libh2o-evloop.so
+%{_libdir}/pkgconfig/libh2o.pc
+%{_libdir}/pkgconfig/libh2o-evloop.pc
+%{_includedir}/h2o.h
+%{_includedir}/h2o
+
+%changelog
