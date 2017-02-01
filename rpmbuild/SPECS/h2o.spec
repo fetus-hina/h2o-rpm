@@ -21,7 +21,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.1.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.1.0.tar.gz
 Source1: index.html
@@ -290,7 +290,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
-* Mon Jan 23 2017 AIZAWA Hina <hina@bouhine.com> - 2.1.0-2
+* Wed Feb  1 2017 AIZAWA Hina <hina@bouhime.com> - 2.1.0-3
+- Rebuild with LibreSSL 2.5.1
+
+* Mon Jan 23 2017 AIZAWA Hina <hina@bouhime.com> - 2.1.0-2
 - Reload h2o daemon after upgrade
 
 * Wed Jan 18 2017 AIZAWA Hina <hina@bouhime.com> - 2.1.0-1
