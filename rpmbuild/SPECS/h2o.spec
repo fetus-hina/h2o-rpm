@@ -21,7 +21,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.1.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.1.0.tar.gz
 Source1: index.html
@@ -254,16 +254,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %{_bindir}/h2o
-%{_datadir}/h2o/annotate-backtrace-symbols
-%{_datadir}/h2o/ca-bundle.crt
-%{_datadir}/h2o/fastcgi-cgi
-%{_datadir}/h2o/fetch-ocsp-response
-%{_datadir}/h2o/kill-on-close
-%{_datadir}/h2o/mruby
-%{_datadir}/h2o/setuidgid
-%{_datadir}/h2o/start_server
-%{_datadir}/h2o/status/index.html
-
+%{_datadir}/h2o
 %{_datadir}/doc
 
 %if 0%{?suse_version} == 0
@@ -280,16 +271,15 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0700,root,root) %dir %{_localstatedir}/log/h2o
 
 %files devel
-%{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.0.12.0
-%{_libdir}/libh2o-evloop.so.0.12
-%{_libdir}/libh2o-evloop.so
-%{_libdir}/pkgconfig/libh2o.pc
-%{_libdir}/pkgconfig/libh2o-evloop.pc
+%{_libdir}/libh2o-evloop.*
+%{_libdir}/pkgconfig/libh2o*
 %{_includedir}/h2o.h
 %{_includedir}/h2o
 
 %changelog
+* Wed May  3 2017 AIZAWA Hina <hina@bouhime.com> - 2.1.0-4
+- Rebuild with LibreSSL 2.5.4
+
 * Wed Feb  1 2017 AIZAWA Hina <hina@bouhime.com> - 2.1.0-3
 - Rebuild with LibreSSL 2.5.1
 
