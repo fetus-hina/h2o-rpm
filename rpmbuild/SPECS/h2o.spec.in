@@ -20,21 +20,43 @@ License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: cmake >= 2.8, gcc-c++, openssl-devel, pkgconfig, ruby >= 1.9, bison
-Requires: openssl, perl
 BuildRequires: systemd-units
-Requires(preun): systemd
-Requires(postun): systemd
-Requires(post): systemd
+Requires: h2o-core = %{version}-%{release}
+Requires: h2o-doc = %{version}-%{release}
 
 %description
 H2O is a very fast HTTP server written in C. It can also be used
 as a library.
 
+
+
+%package core
+Group: System Environment/Daemons
+Summary: H2O - The optimized HTTP/1, HTTP/2 server
+Requires: openssl, perl
+Requires(preun): systemd
+Requires(postun): systemd
+Requires(post): systemd
+
+%description core
+H2O is a very fast HTTP server written in C. It can also be used
+as a library.
+
+
+
+%package doc
+Group: System Environment/Daemons
+Summary: H2O - The optimized HTTP/1, HTTP/2 server
+
+%description doc
+Document files for H2O webserver.
+
+
 %package devel
 Group: Development/Libraries
 Summary: Development interfaces for H2O
 Requires: openssl-devel
-Requires: h2o = %{version}-%{release}
+Requires: h2o-core = %{version}-%{release}
 
 %description devel
 The h2o-devel package provides H2O library and its header files
@@ -72,12 +94,10 @@ mkdir -p %{buildroot}%{_sysconfdir}/h2o
 install -m 644 -p $RPM_SOURCE_DIR/h2o.conf \
         %{buildroot}%{_sysconfdir}/h2o/h2o.conf
 
-%if 0%{?suse_version} == 0
 # docroot
 mkdir -p %{buildroot}%{docroot}/html
 install -m 644 -p $RPM_SOURCE_DIR/index.html \
         %{buildroot}%{docroot}/html/index.html
-%endif
 
 # Set up /var directories
 mkdir -p %{buildroot}%{_localstatedir}/log/h2o
@@ -119,6 +139,8 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 
+
+%files core
 %dir %{_sysconfdir}/h2o
 %config(noreplace) %{_sysconfdir}/h2o/h2o.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/h2o
@@ -137,25 +159,25 @@ rm -rf %{buildroot}
 %{_datadir}/h2o/start_server
 %{_datadir}/h2o/status/index.html
 
-%{_datadir}/doc
-
-%if 0%{?suse_version} == 0
 %dir %{docroot}
 %dir %{docroot}/html
 %config(noreplace) %{docroot}/html/index.html
-%endif
 
 %attr(0770,root,nobody) %dir /run/h2o
 %attr(0700,root,root) %dir %{_localstatedir}/log/h2o
 
+
+%files doc
+%{_datadir}/doc
+%{_datadir}/man
+
+
+
 %files devel
-%{_libdir}/libh2o-evloop.a
-%{_libdir}/libh2o-evloop.so.__LIBH2O_VERSION__
-%{_libdir}/libh2o-evloop.so.__LIBH2O_SO_VERSION__
-%{_libdir}/libh2o-evloop.so
-%{_libdir}/pkgconfig/libh2o.pc
-%{_libdir}/pkgconfig/libh2o-evloop.pc
+%{_libdir}/libh2o-evloop.*
+%{_libdir}/pkgconfig/libh2o*
 %{_includedir}/h2o.h
 %{_includedir}/h2o
+
 
 %changelog
