@@ -20,10 +20,10 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 2.2.2
-Release: 5%{?dist}
+Version: 2.2.3
+Release: 1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.2.2.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.2.3.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -71,7 +71,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.2.2
+%setup -q -n h2o-2.2.3
 cp /rpmbuild/SOURCES/libressl-*.tar.gz ./misc/
 %patch100 -p0
 
@@ -277,6 +277,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Thu Oct 19 2017 AIZAWA Hina <hina@bouhime.com> - 2.2.3-1
+- Update to 2.2.3
+
 * Thu Oct 12 2017 AIZAWA Hina <hina@bouhime.com> - 2.2.2-5
 - Rebuild with LibreSSL 2.6.2
 
