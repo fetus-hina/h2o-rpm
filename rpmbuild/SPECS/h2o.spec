@@ -21,7 +21,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.2.3
-Release: 3%{?dist}
+Release: 4%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.2.3.tar.gz
 Source1: index.html
@@ -32,6 +32,7 @@ Source5: h2o.conf
 Source6: h2o-tmpfile.conf
 Patch100: h2o-libressl.patch
 Patch900: h2o-issue-1464.patch
+Patch901: h2o-issue-1463.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -76,6 +77,7 @@ which allow you to build your own software using H2O.
 cp /rpmbuild/SOURCES/libressl-*.tar.gz ./misc/
 %patch100 -p0
 %patch900 -p1
+%patch901 -p1
 
 %build
 cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
@@ -279,6 +281,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Mon Nov 13 2017 AIZAWA Hina <hina@bouhime.com> - 2.2.3-4
+- Add patch for https://github.com/h2o/h2o/issues/1463
+
 * Tue Nov  8 2017 AIZAWA Hina <hina@bouhime.com> - 2.2.3-3
 - Rebuild with LibreSSL 2.6.3
 
