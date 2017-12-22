@@ -1,9 +1,9 @@
---- misc/libressl.mk 2016-07-09 20:05:27.387438722 +0900
-+++ misc/libressl.mk 2016-07-09 20:06:04.234439097 +0900
+--- misc/libressl.mk
++++ misc/libressl.mk
 @@ -1,5 +1,5 @@
  SOURCE_DIR=.
 -VERSION=2.4.5
-+VERSION=2.6.3
++VERSION=2.6.4
  ARCHIVE=$(SOURCE_DIR)/libressl-$(VERSION).tar.gz
  DEST=libressl-build
  UNAME=$(shell uname -s)
