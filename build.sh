@@ -7,7 +7,7 @@ REPO_DIR=${SCRIPT_DIR}/repo
 
 cd $SCRIPT_DIR
 
-rm -rf $REPO_DIR h2o-info.mk
+rm -rf $REPO_DIR h2o-info.mk libressl-info.mk
 
 docker pull centos:7
 rm -rf centos7.build

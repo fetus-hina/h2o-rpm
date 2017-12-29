@@ -7,7 +7,7 @@ centos7: IMAGE_NAME := $(IMAGE_NAME)-el7
 
 .PHONY: all clean centos7
 
-all: h2o-info.mk centos7
+all: h2o-info.mk libressl-info.mk centos7
 centos7: centos7.build
 
 repo:
@@ -16,10 +16,13 @@ repo:
 h2o-info.mk: repo
 	./util/h2o-info.js > $@
 
+libressl-info.mk:
+	./util/libressl-info.js > $@
+
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE): repo
 	tar -zcv --exclude-vcs -f $@ $<
 
-rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk
+rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk libressl-info.mk
 	cat rpmbuild/SPECS/h2o.spec.in \
 		| sed \
 			-e s/__RPM_REVISION__/$(RPM_REVISION)/ \
@@ -27,6 +30,7 @@ rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk
 			-e s/__H2O_VERSION_WO_DEV__/$(H2O_VERSION_WO_DEV)/ \
 			-e s/__LIBH2O_VERSION__/$(LIBH2O_VERSION)/ \
 			-e s/__LIBH2O_SO_VERSION__/$(LIBH2O_SO_VERSION)/ \
+			-e s/__LIBRESSL_VERSION__/$(LIBRESSL_VERSION)/ \
 		> $@
 
 %.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE)
@@ -45,7 +49,10 @@ rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk
 	docker images | grep -q $(IMAGE_NAME) && docker rmi $(IMAGE_NAME) || true
 
 clean:
-	rm -rf *.build.bak *.build tmp Dockerfile h2o-info.mk repo rpmbuild/SPECS/h2o.spec
+	rm -rf *.build.bak *.build tmp Dockerfile \
+		h2o-info.mk libressl-info.mk \
+		repo rpmbuild/SPECS/h2o.spec
 	docker images | grep -q $(IMAGE_NAME)-el7 && docker rmi $(IMAGE_NAME)-el7 || true
 
 include h2o-info.mk
+include libressl-info.mk

@@ -1,6 +1,7 @@
 *.build
 *.build.bak
 /h2o-info.mk
+/libressl-info.mk
 /repo
 Dockerfile
 rpmbuild/SOURCES/*.tar.gz
