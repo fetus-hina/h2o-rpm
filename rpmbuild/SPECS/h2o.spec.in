@@ -80,7 +80,6 @@ make install
 popd
 
 cmake \
-    -DWITH_BUNDLED_SSL=off \
     -DWITH_MRUBY=on \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
@@ -90,7 +89,6 @@ cmake \
 make %{?_smp_mflags}
 
 cmake \
-    -DWITH_BUNDLED_SSL=off \
     -DWITH_MRUBY=on \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
