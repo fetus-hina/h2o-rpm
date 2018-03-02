@@ -86,8 +86,15 @@ const libh2o_so_version = (() => {
   // }}}
 })();
 
+const git_revision = (() => {
+  // {{{
+  return gitRevision(path.join(__dirname, '..', 'repo'));
+  // }}}
+})();
+
 console.log(`RPM_REVISION := ${rpm_revision}`);
 console.log(`H2O_VERSION := ${h2o_version}`);
 console.log('H2O_VERSION_WO_DEV := ' + h2o_version.replace(/-.*$/, ''));
 console.log(`LIBH2O_VERSION := ${libh2o_version}`);
 console.log(`LIBH2O_SO_VERSION := ${libh2o_so_version}`);
+console.log(`GIT_REVISION := ${git_revision}`);
