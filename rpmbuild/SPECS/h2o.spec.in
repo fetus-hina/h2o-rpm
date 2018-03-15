@@ -84,7 +84,6 @@ cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
     -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
-    -DCMAKE_C_FLAGS="-DH2O_GIT_REVISION=__GIT_REVISION__" \
     .
 make %{?_smp_mflags}
 
@@ -93,7 +92,6 @@ cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
     -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
-    -DCMAKE_C_FLAGS="-DH2O_GIT_REVISION=__GIT_REVISION__" \
     -DBUILD_SHARED_LIBS=on \
     .
 make %{?_smp_mflags}

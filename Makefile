@@ -28,7 +28,6 @@ rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk libressl-info.mk
 			-e s/__RPM_REVISION__/$(RPM_REVISION)/ \
 			-e s/__H2O_VERSION__/$(H2O_VERSION)/ \
 			-e s/__H2O_VERSION_WO_DEV__/$(H2O_VERSION_WO_DEV)/ \
-			-e s/__GIT_REVISION__/$(GIT_REVISION)/ \
 			-e s/__LIBH2O_VERSION__/$(LIBH2O_VERSION)/ \
 			-e s/__LIBH2O_SO_VERSION__/$(LIBH2O_SO_VERSION)/ \
 			-e s/__LIBRESSL_VERSION__/$(LIBRESSL_VERSION)/ \
