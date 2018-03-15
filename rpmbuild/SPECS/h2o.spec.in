@@ -20,7 +20,7 @@ Source1000: libressl-__LIBRESSL_VERSION__.tar.gz
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: cmake >= 2.8, gcc-c++, openssl-devel, pkgconfig, ruby >= 1.9, bison
+BuildRequires: cmake >= 2.8, devtoolset-7-gcc-c++, openssl-devel, pkgconfig, ruby >= 1.9, bison
 BuildRequires: systemd-units
 Requires: h2o-nightly-core = %{version}-%{release}
 Requires: h2o-nightly-doc = %{version}-%{release}

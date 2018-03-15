@@ -1,10 +1,25 @@
 FROM centos:7
 ENV HOME /
-RUN yum update -y && yum install -y rpm-build redhat-rpm-config rpmdevtools cmake gcc-c++ tar make openssl-devel ruby ruby-devel bison git && yum clean all
+RUN yum update -y && \
+    yum install -y centos-release-scl scl-utils && \
+    yum install -y \
+        bison \
+        cmake \
+        devtoolset-7-gcc-c++ \
+        git \
+        make \
+        openssl-devel \
+        redhat-rpm-config \
+        rpm-build \
+        rpmdevtools \
+        ruby \
+        ruby-devel \
+        tar && \
+    yum clean all
 RUN rpmdev-setuptree
 RUN echo '%dist .el7.jp3cki' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/
 RUN chown -R root:root /rpmbuild
-RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
+RUN scl enable devtoolset-7 -- rpmbuild -ba /rpmbuild/SPECS/h2o.spec
 RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
 CMD ["/bin/true"]
