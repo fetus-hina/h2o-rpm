@@ -15,13 +15,16 @@ const gitRevision = path => {
 
 const rpm_revision = (() => {
   // {{{
-  const zero = num => num < 10 ? "0" + String(num) : String(num);
-  const date = new Date();
-  const year = date.getFullYear();
+  const zero  = num => num < 10 ? "0" + String(num) : String(num);
+  const date  = new Date();
+  const year  = date.getFullYear();
   const month = zero(date.getMonth() + 1);
-  const day = zero(date.getDate());
+  const day   = zero(date.getDate());
+  const hour  = zero(date.getHours());
+  const min   = zero(date.getMinutes());
+  const sec   = zero(date.getSeconds());
   const revision = gitRevision(path.join(__dirname, '..', 'repo'));
-  return `0.nightly${year}${month}${day}.git${revision}`;
+  return `0.nightly${year}${month}${day}t${hour}${min}${sec}.git${revision}`;
   // }}}
 })();
 
