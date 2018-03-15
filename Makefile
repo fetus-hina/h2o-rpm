@@ -20,7 +20,7 @@ libressl-info.mk:
 	./util/libressl-info.js > $@
 
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE): repo
-	tar -zcv --exclude-vcs -f $@ $<
+	tar -zcvf $@ $<
 
 rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk libressl-info.mk
 	cat rpmbuild/SPECS/h2o.spec.in \
