@@ -1,5 +1,5 @@
 SOURCE_ARCHIVE := v2.2.4.tar.gz
-LIBRESSL_ARCHIVE := libressl-2.6.4.tar.gz
+LIBRESSL_ARCHIVE := libressl-2.7.0.tar.gz
 TARGZ_FILE := h2o.tar.gz
 IMAGE_NAME := h2o-next-package
 centos6: IMAGE_NAME := $(IMAGE_NAME)-ce6
@@ -21,12 +21,9 @@ rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
 	curl -SL https://github.com/h2o/h2o/archive/$(SOURCE_ARCHIVE) -o rpmbuild/SOURCES/$(SOURCE_ARCHIVE)
 
 rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE):
-	curl -SL http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/$(LIBRESSL_ARCHIVE) -o $@
+	curl -SL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/$(LIBRESSL_ARCHIVE) -o $@
 
-rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE).asc:
-	curl  -SL http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/$(LIBRESSL_ARCHIVE).asc -o $@
-
-%.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE).asc
+%.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE)
 	[ -d $@.bak ] && rm -rf $@.bak || :
 	[ -d $@ ] && mv $@ $@.bak || :
 	cp Dockerfile.$* Dockerfile

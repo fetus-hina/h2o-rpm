@@ -18,10 +18,12 @@
 %endif
 %endif
 
+%define libressl_version 2.7.0
+
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.2.4
-Release: 2%{?dist}
+Release: 3%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.2.4.tar.gz
 Source1: index.html
@@ -30,7 +32,8 @@ Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
-Patch100: h2o-libressl.patch
+Source100: libressl-%{libressl_version}.tar.gz
+Patch1: h2o-libressl-2.7.0.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -71,16 +74,40 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-2.2.4
-cp /rpmbuild/SOURCES/libressl-*.tar.gz ./misc/
-%patch100 -p0
+%setup -q -n h2o-%{version}
+%patch1 -p1
+%define libressl_build %{_tmppath}/%{name}-%{version}-%{release}-libressl-build
+mkdir -p %{libressl_build}
+cat %{SOURCE100} | tar -zx -C %{libressl_build} --strip-components=1 -f -
 
 %build
-cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} .
+# build LibreSSL
+pushd %{libressl_build}
+%define libressl_root %{_tmppath}/%{name}-%{version}-%{release}-libressl-root
+./configure --disable-shared --prefix=%{libressl_root} --libdir=%{libressl_root}/lib --with-pic
+make %{?_smp_mflags}
+make install
+popd
+
+# Build H2O
+cmake \
+    -DWITH_BUNDLED_SSL=off \
+    -DWITH_MRUBY=on \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
+    -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
+    .
 make %{?_smp_mflags}
 
 # for building shared library
-cmake -DWITH_BUNDLED_SSL=on -DWITH_MRUBY=on -DCMAKE_INSTALL_PREFIX=%{_prefix} -DBUILD_SHARED_LIBS=on .
+cmake \
+    -DWITH_BUNDLED_SSL=off \
+    -DWITH_MRUBY=on \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
+    -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
+    -DBUILD_SHARED_LIBS=on \
+    .
 make %{?_smp_mflags}
 
 %if !%{with_systemd}
@@ -277,6 +304,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Fri Mar 23 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.4-3
+- Rebuild with LibreSSL 2.7.0
+
 * Fri Dec 22 2017 AIZAWA Hina <hina@bouhime.com> - 2.2.4-2
 - Rebuild with LibreSSL 2.6.4
 
@@ -287,7 +317,7 @@ rm -rf $RPM_BUILD_ROOT
 * Mon Nov 13 2017 AIZAWA Hina <hina@bouhime.com> - 2.2.3-4
 - Add patch for https://github.com/h2o/h2o/issues/1463
 
-* Tue Nov  8 2017 AIZAWA Hina <hina@bouhime.com> - 2.2.3-3
+* Wed Nov  8 2017 AIZAWA Hina <hina@bouhime.com> - 2.2.3-3
 - Rebuild with LibreSSL 2.6.3
 
 * Fri Oct 20 2017 AIZAWA Hina <hina@bouhime.com> - 2.2.3-2

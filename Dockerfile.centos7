@@ -5,7 +5,6 @@ RUN rpmdev-setuptree
 RUN echo '%dist   .el7.jp3cki' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/
 RUN chown -R root:root /rpmbuild
-RUN gpg --import /rpmbuild/SOURCES/libressl.asc && gpg --verify /rpmbuild/SOURCES/libressl-*.tar.gz.asc
 RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
 RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
 CMD ["/bin/true"]
