@@ -23,7 +23,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.2.4
-Release: 4%{?dist}
+Release: 5%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.2.4.tar.gz
 Source1: index.html
@@ -96,6 +96,8 @@ cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
     -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
+    -DCMAKE_EXE_LINKER_FLAGS_INIT="-lrt" \
+    -DCMAKE_SHARED_LINKER_FLAGS_INIT="-lrt" \
     .
 make %{?_smp_mflags}
 
@@ -107,6 +109,8 @@ cmake \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
     -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
     -DBUILD_SHARED_LIBS=on \
+    -DCMAKE_EXE_LINKER_FLAGS_INIT="-lrt" \
+    -DCMAKE_SHARED_LINKER_FLAGS_INIT="-lrt" \
     .
 make %{?_smp_mflags}
 
@@ -304,6 +308,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Wed Mar 28 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.4-5
+- Fix build issue on CentOS 6 system
+
 * Sun Mar 25 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.4-4
 - Rebuild with LibreSSL 2.7.1
 
