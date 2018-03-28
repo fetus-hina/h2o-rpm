@@ -1,0 +1,11 @@
+FROM amazonlinux:1
+ENV HOME /
+RUN yum update -y && \
+    yum install -y rpm-build redhat-rpm-config rpmdevtools cmake gcc72-c++ tar openssl-devel bison ruby24 ruby24-devel
+RUN rpmdev-setuptree
+RUN echo '%dist .amzn1.jp3cki' >> /.rpmmacros
+ADD ./rpmbuild/ /rpmbuild/
+RUN chown -R root:root /rpmbuild
+RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
+RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
+CMD ["/bin/true"]

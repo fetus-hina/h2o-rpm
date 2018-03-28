@@ -1,16 +1,16 @@
 %define docroot /var/www
 
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7 || 0%{?suse_version} >= 1210
+%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7 || 0%{?suse_version} >= 1210 || 0%{?amzn} >= 2
   %global with_systemd 1
 %else
   %global with_systemd 0
 %endif
 
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
+%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7 || 0%{?amzn} >= 2
 %{?perl_default_filter}
 %global __requires_exclude perl\\(VMS|perl\\(Win32|perl\\(Server::Starter
 %else
-%if 0%{?rhel} == 6
+%if 0%{?rhel} == 6 || 0%{?amzn} == 1
 %{?filter_setup:
 %filter_requires_in %{_datadir}
 %filter_setup
