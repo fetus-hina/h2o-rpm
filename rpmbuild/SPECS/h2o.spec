@@ -18,12 +18,12 @@
 %endif
 %endif
 
-%define libressl_version 2.7.2
+%define libressl_version 2.7.3
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.2.4
-Release: 6%{?dist}
+Release: 7%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.2.4.tar.gz
 Source1: index.html
@@ -308,6 +308,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Sun May  6 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.4-7
+- Rebuild with LibreSSL 2.7.3
+
 * Fri Apr 13 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.4-6
 - Rebuild with LibreSSL 2.7.2
 
