@@ -93,6 +93,7 @@ popd
 cmake \
     -DWITH_BUNDLED_SSL=off \
     -DWITH_MRUBY=on \
+    -DCMAKE_C_FLAGS="-std=c99" \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
     -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
@@ -105,6 +106,7 @@ make %{?_smp_mflags}
 cmake \
     -DWITH_BUNDLED_SSL=off \
     -DWITH_MRUBY=on \
+    -DCMAKE_C_FLAGS="-std=c99" \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
     -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
