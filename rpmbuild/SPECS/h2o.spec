@@ -22,10 +22,10 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 2.2.4
-Release: 7%{?dist}
+Version: 2.2.5
+Release: 1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.2.4.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.2.5.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -33,7 +33,6 @@ Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
 Source100: libressl-%{libressl_version}.tar.gz
-Patch1: h2o-libressl-2.7.0.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -75,7 +74,6 @@ which allow you to build your own software using H2O.
 
 %prep
 %setup -q -n h2o-%{version}
-%patch1 -p1
 %define libressl_build %{_tmppath}/%{name}-%{version}-%{release}-libressl-build
 mkdir -p %{libressl_build}
 cat %{SOURCE100} | tar -zx -C %{libressl_build} --strip-components=1 -f -
@@ -308,6 +306,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Sat Jun  2 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-1
+- Update to 2.2.5
+
 * Sun May  6 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.4-7
 - Rebuild with LibreSSL 2.7.3
 
