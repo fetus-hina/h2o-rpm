@@ -22,10 +22,10 @@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
-Version: 2.2.5
-Release: 2%{?dist}
+Version: 2.3.0
+Release: 0.1.bata1.1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.2.5.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta1.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -33,7 +33,6 @@ Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
 Source100: libressl-%{libressl_version}.tar.gz
-Patch1: h2o-libressl-2.7.0.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -74,8 +73,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-%{version}
-%patch1 -p1
+%setup -q -n h2o-%{version}-beta1
 %define libressl_build %{_tmppath}/%{name}-%{version}-%{release}-libressl-build
 mkdir -p %{libressl_build}
 cat %{SOURCE100} | tar -zx -C %{libressl_build} --strip-components=1 -f -
@@ -290,7 +288,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_bindir}/h2o
 %{_datadir}/h2o
-%{_datadir}/doc
+%{_datadir}/doc/h2o
+%{_datadir}/man
 
 %if 0%{?suse_version} == 0
 %dir %{docroot}
@@ -312,6 +311,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Sun Jun  3 2018 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.1.bata1.1
+- Update to v2.3.0 beta 1
+
 * Sun Jun  3 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-2
 - Fix build issue for CentOS 6 systems.
 
