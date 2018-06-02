@@ -23,7 +23,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.2.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.2.5.tar.gz
 Source1: index.html
@@ -37,11 +37,11 @@ Patch1: h2o-libressl-2.7.0.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: cmake >= 2.8, gcc-c++, openssl-devel, pkgconfig
+BuildRequires: cmake >= 2.8, openssl-devel, pkgconfig
 %if 0%{?rhel} == 6
-BuildRequires: ruby193, bison
+BuildRequires: devtoolset-7-gcc-c++, ruby193, bison
 %else
-BuildRequires: ruby >= 1.9, bison
+BuildRequires: gcc-c++, ruby >= 1.9, bison
 %endif
 Requires: openssl, perl
 %if %{with_systemd}
@@ -93,7 +93,8 @@ popd
 cmake \
     -DWITH_BUNDLED_SSL=off \
     -DWITH_MRUBY=on \
-    -DCMAKE_C_FLAGS="-std=c99" \
+    -DCMAKE_C_FLAGS="-std=gnu99" \
+    -DCMAKE_CXX_FLAGS="-std=gnu++0x" \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
     -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
@@ -106,7 +107,8 @@ make %{?_smp_mflags}
 cmake \
     -DWITH_BUNDLED_SSL=off \
     -DWITH_MRUBY=on \
-    -DCMAKE_C_FLAGS="-std=c99" \
+    -DCMAKE_C_FLAGS="-std=gnu99" \
+    -DCMAKE_CXX_FLAGS="-std=gnu++0x" \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
     -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
@@ -310,6 +312,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Sun Jun  3 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-2
+- Fix build issue for CentOS 6 systems.
+
 * Sat Jun  2 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-1
 - Update to 2.2.5
 
