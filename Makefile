@@ -1,5 +1,5 @@
 SOURCE_ARCHIVE := v2.3.0-beta1.tar.gz
-LIBRESSL_ARCHIVE := libressl-2.7.3.tar.gz
+LIBRESSL_ARCHIVE := libressl-2.7.4.tar.gz
 TARGZ_FILE := h2o.tar.gz
 IMAGE_NAME := h2o-23-package
 centos6: IMAGE_NAME := $(IMAGE_NAME)-ce6

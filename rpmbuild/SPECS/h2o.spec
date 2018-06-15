@@ -18,12 +18,12 @@
 %endif
 %endif
 
-%define libressl_version 2.7.3
+%define libressl_version 2.7.4
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.3.0
-Release: 0.1.bata1.1%{?dist}
+Release: 0.1.bata1.2%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta1.tar.gz
 Source1: index.html
@@ -38,7 +38,7 @@ Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: cmake >= 2.8, openssl-devel, pkgconfig
 %if 0%{?rhel} == 6
-BuildRequires: devtoolset-7-gcc-c++, ruby193, bison
+BuildRequires: devtoolset-7-gcc-c++, rh-ruby24-ruby, bison
 %else
 BuildRequires: gcc-c++, ruby >= 1.9, bison
 %endif
@@ -311,6 +311,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Fri Jun 15 2018 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.1.beta1.2
+- Rebuild with LibreSSL 2.7.4
+- (CentOS 6) Update ruby to v2.4
+
+* Fri Jun 15 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-4
+- (CentOS 6) Update ruby to v2.4
+
+* Fri Jun 15 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-3
+- Rebuild with LibreSSL 2.7.4
+
 * Sun Jun  3 2018 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.1.bata1.1
 - Update to v2.3.0 beta 1
 
