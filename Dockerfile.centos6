@@ -1,10 +1,27 @@
 FROM centos:6
 ENV HOME /
-RUN yum update -y && yum install -y rpm-build redhat-rpm-config rpmdevtools cmake tar openssl-devel bison centos-release-scl-rh git && yum install -y ruby193 ruby193-ruby-devel devtoolset-7-gcc-c++
+RUN yum update -y && \
+    yum install -y \
+        bison \
+        centos-release-scl-rh \
+        cmake \
+        git \
+        openssl-devel \
+        redhat-rpm-config \
+        rpm-build \
+        rpmdevtools \
+        scl-utils \
+        tar && \
+    yum install -y \
+        rh-ruby24 \
+        rh-ruby24-ruby \
+        rh-ruby24-ruby-devel \
+        devtoolset-7-gcc-c++ && \
+    yum clean all
 RUN rpmdev-setuptree
-RUN echo '%dist   .el6.jp3cki' >> /.rpmmacros
+RUN echo '%dist .el6.jp3cki' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/
 RUN chown -R root:root /rpmbuild
-RUN scl enable ruby193 devtoolset-7 -- rpmbuild -ba /rpmbuild/SPECS/h2o.spec
+RUN scl enable rh-ruby24 devtoolset-7 -- rpmbuild -ba /rpmbuild/SPECS/h2o.spec
 RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
 CMD ["/bin/true"]
