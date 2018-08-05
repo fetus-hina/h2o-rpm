@@ -1,6 +1,26 @@
 FROM amazonlinux:2
 ENV HOME /
-RUN yum update -y && yum install -y rpm-build redhat-rpm-config rpmdevtools cmake gcc-c++ tar make openssl-devel ruby ruby-devel bison git systemd-units && yum clean all
+RUN yum update -y && \
+    yum install -y \
+        autoconf \
+        automake \
+        bison \
+        cmake \
+        gcc-c++ \
+        git \
+        git \
+        libtool \
+        make \
+        openssl-devel \
+        perl \
+        redhat-rpm-config \
+        rpm-build \
+        rpmdevtools \
+        ruby \
+        ruby-devel \
+        systemd-units \
+        tar && \
+    yum clean all
 RUN rpmdev-setuptree
 RUN echo '%dist .amzn2.jp3cki' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/

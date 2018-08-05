@@ -1,8 +1,26 @@
 FROM centos:7
 ENV HOME /
-RUN yum update -y && yum install -y rpm-build redhat-rpm-config rpmdevtools cmake gcc-c++ tar make openssl-devel ruby ruby-devel bison git && yum clean all
+RUN yum update -y && \
+    yum install -y \
+        autoconf \
+        automake \
+        bison \
+        cmake \
+        gcc-c++ \
+        git \
+        libtool \
+        make \
+        openssl-devel \
+        redhat-rpm-config \
+        rpm-build \
+        rpmdevtools \
+        ruby \
+        ruby-devel \
+        tar && \
+    yum clean all && \
+    rm -rf /var/cache/yum
 RUN rpmdev-setuptree
-RUN echo '%dist   .el7.jp3cki' >> /.rpmmacros
+RUN echo '%dist .el7.jp3cki' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/
 RUN chown -R root:root /rpmbuild
 RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec

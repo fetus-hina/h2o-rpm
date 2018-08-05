@@ -1,5 +1,8 @@
-SOURCE_ARCHIVE := v2.3.0-beta1.tar.gz
-LIBRESSL_ARCHIVE := libressl-2.7.4.tar.gz
+H2O_VERSION := 2.3.0-beta1
+LIBRESSL_VERSION := 2.8.0
+
+SOURCE_ARCHIVE := v$(H2O_VERSION).tar.gz
+LIBRESSL_ARCHIVE := libressl-$(LIBRESSL_VERSION).tar.gz
 TARGZ_FILE := h2o.tar.gz
 IMAGE_NAME := h2o-23-package
 centos6: IMAGE_NAME := $(IMAGE_NAME)-ce6
@@ -22,10 +25,10 @@ amzn1: amzn1.build
 amzn2: amzn2.build
 
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
-	curl -SL https://github.com/h2o/h2o/archive/$(SOURCE_ARCHIVE) -o rpmbuild/SOURCES/$(SOURCE_ARCHIVE)
+	curl -SL https://github.com/h2o/h2o/archive/$(SOURCE_ARCHIVE) -o $@
 
 rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE):
-	curl -SL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/$(LIBRESSL_ARCHIVE) -o $@
+	curl -SL https://github.com/libressl-portable/portable/archive/v$(LIBRESSL_VERSION).tar.gz -o $@
 
 %.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE)
 	[ -d $@.bak ] && rm -rf $@.bak || :
