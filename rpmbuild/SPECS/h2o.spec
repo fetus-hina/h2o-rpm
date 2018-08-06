@@ -312,6 +312,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Mon Aug  6 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-5
+- Rebuild with LibreSSL 2.8.0
+
 * Sun Aug  5 2018 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.1.beta1.3
 - Rebuild with LibreSSL 2.8.0
 
