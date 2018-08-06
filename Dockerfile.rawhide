@@ -1,7 +1,24 @@
 FROM fedora:rawhide
 ENV HOME /
-RUN dnf update -y
-RUN dnf install -y rpm-build redhat-rpm-config rpmdevtools cmake gcc-c++ tar make openssl-devel ruby ruby-devel bison git
+RUN dnf update -y && \
+    dnf install -y \
+        autoconf \
+        automake \
+        bison \
+        cmake \
+        gcc-c++ \
+        git \
+        libtool \
+        make \
+        openssl-devel \
+        perl \
+        redhat-rpm-config \
+        rpm-build \
+        rpmdevtools \
+        ruby \
+        ruby-devel \
+        tar && \
+    dnf clean all
 RUN rpmdev-setuptree
 RUN echo '%dist .jp3cki.fc27' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/

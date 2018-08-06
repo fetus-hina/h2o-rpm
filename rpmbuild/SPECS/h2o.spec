@@ -18,12 +18,12 @@
 %endif
 %endif
 
-%define libressl_version 2.7.4
+%define libressl_version 2.8.0
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.2.5
-Release: 4%{?dist}
+Release: 5%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.2.5.tar.gz
 Source1: index.html
@@ -37,11 +37,11 @@ Patch1: h2o-libressl-2.7.0.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: cmake >= 2.8, openssl-devel, pkgconfig
+BuildRequires: autoconf, automake, bison cmake >= 2.8, git, libtool, openssl-devel, perl pkgconfig
 %if 0%{?rhel} == 6
-BuildRequires: devtoolset-7-gcc-c++, rh-ruby24-ruby, bison
+BuildRequires: devtoolset-7-gcc-c++, rh-ruby24-ruby
 %else
-BuildRequires: gcc-c++, ruby >= 1.9, bison
+BuildRequires: gcc-c++, ruby >= 1.9
 %endif
 Requires: openssl, perl
 %if %{with_systemd}
@@ -84,6 +84,7 @@ cat %{SOURCE100} | tar -zx -C %{libressl_build} --strip-components=1 -f -
 # build LibreSSL
 pushd %{libressl_build}
 %define libressl_root %{_tmppath}/%{name}-%{version}-%{release}-libressl-root
+./autogen.sh
 ./configure --disable-shared --prefix=%{libressl_root} --libdir=%{libressl_root}/lib --with-pic
 make %{?_smp_mflags}
 make install
@@ -312,6 +313,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Mon Aug  6 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-5
+- Rebuild with LibreSSL 2.8.0
+
 * Fri Jun 15 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-4
 - (CentOS 6) Update ruby to v2.4
 

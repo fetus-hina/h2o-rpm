@@ -2,11 +2,15 @@ FROM centos:6
 ENV HOME /
 RUN yum update -y && \
     yum install -y \
+        autoconf \
+        automake \
         bison \
         centos-release-scl-rh \
         cmake \
         git \
+        libtool \
         openssl-devel \
+        perl \
         redhat-rpm-config \
         rpm-build \
         rpmdevtools \
