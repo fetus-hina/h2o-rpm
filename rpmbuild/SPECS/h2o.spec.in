@@ -16,12 +16,11 @@ Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
-Source1000: libressl-__LIBRESSL_VERSION__.tar.gz
+Source1000: libressl.tar.gz
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: cmake >= 2.8, devtoolset-7-gcc-c++, openssl-devel, pkgconfig, ruby >= 1.9, bison
-BuildRequires: systemd-units
+BuildRequires: autoconf, automake, bison, cmake >= 2.8, devtoolset-7-gcc-c++, git, libtool, openssl-devel, perl, pkgconfig, ruby >= 1.9, systemd-units
 Requires: h2o-nightly-core = %{version}-%{release}
 Requires: h2o-nightly-doc = %{version}-%{release}
 
@@ -73,7 +72,8 @@ tar -zx -C libressl-source --strip-components=1 -f %{SOURCE1000}
 %build
 # build libressl
 pushd libressl-source
-%define libressl_root %{_tmppath}/%{name}-%{version}-%{release}-libressl-__LIBRESSL_VERSION__-root
+%define libressl_root %{_tmppath}/%{name}-%{version}-%{release}-libressl-root
+./autogen.sh
 ./configure --disable-shared --prefix=%{libressl_root} --libdir=%{libressl_root}/lib --with-pic
 make %{?_smp_mflags}
 make install

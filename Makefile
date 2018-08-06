@@ -1,4 +1,5 @@
 SOURCE_ARCHIVE := h2o-master.tar.gz
+LIBRESSL_ARCHIVE := libressl.tar.gz
 
 TARGZ_FILE := h2o.tar.gz
 IMAGE_NAME := h2o-nightly-package
@@ -11,18 +12,24 @@ all: h2o-info.mk libressl-info.mk centos7
 centos7: centos7.build
 
 repo:
-	git clone https://github.com/h2o/h2o.git $@
+	git clone --depth=1 https://github.com/h2o/h2o.git $@
+
+libressl-repo:
+	git clone --depth=1 https://github.com/libressl-portable/portable.git $@
+
+libressl-repo/openbsd: libressl-repo
+	git clone --depth=1 https://github.com/libressl-portable/openbsd.git $@
 
 h2o-info.mk: repo
 	./util/h2o-info.js > $@
 
-libressl-info.mk:
-	./util/libressl-info.js > $@
-
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE): repo
 	tar -zcvf $@ $<
 
-rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk libressl-info.mk
+rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE): libressl-repo libressl-repo/openbsd
+	tar -zcvf $@ $<
+
+rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk
 	cat rpmbuild/SPECS/h2o.spec.in \
 		| sed \
 			-e s/__RPM_REVISION__/$(RPM_REVISION)/ \
@@ -30,10 +37,9 @@ rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk libressl-info.mk
 			-e s/__H2O_VERSION_WO_DEV__/$(H2O_VERSION_WO_DEV)/ \
 			-e s/__LIBH2O_VERSION__/$(LIBH2O_VERSION)/ \
 			-e s/__LIBH2O_SO_VERSION__/$(LIBH2O_SO_VERSION)/ \
-			-e s/__LIBRESSL_VERSION__/$(LIBRESSL_VERSION)/ \
 		> $@
 
-%.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE)
+%.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE)
 	[ -d $@.bak ] && rm -rf $@.bak || :
 	[ -d $@ ] && mv $@ $@.bak || :
 	cp Dockerfile.$* Dockerfile
@@ -49,10 +55,17 @@ rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in h2o-info.mk libressl-info.mk
 	docker images | grep -q $(IMAGE_NAME) && docker rmi $(IMAGE_NAME) || true
 
 clean:
-	rm -rf *.build.bak *.build tmp Dockerfile \
-		h2o-info.mk libressl-info.mk \
-		repo rpmbuild/SPECS/h2o.spec
+	rm -rf \
+		*.build \
+		*.build.bak \
+		Dockerfile \
+		h2o-info.mk \
+		libressl-repo \
+		repo \
+		rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE) \
+		rpmbuild/SOURCES/$(SOURCE_ARCHIVE) \
+		rpmbuild/SPECS/h2o.spec \
+		tmp
 	docker images | grep -q $(IMAGE_NAME)-el7 && docker rmi $(IMAGE_NAME)-el7 || true
 
 include h2o-info.mk
-include libressl-info.mk
