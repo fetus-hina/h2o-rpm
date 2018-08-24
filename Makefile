@@ -1,10 +1,10 @@
 H2O_VERSION := 2.3.0-beta1
-LIBRESSL_VERSION := 2.8.0
+OPENSSL_VERSION := 1.1.1-pre9
 
 SOURCE_ARCHIVE := v$(H2O_VERSION).tar.gz
-LIBRESSL_ARCHIVE := libressl-$(LIBRESSL_VERSION).tar.gz
+OPENSSL_ARCHIVE := openssl-$(OPENSSL_VERSION).tar.gz
 TARGZ_FILE := h2o.tar.gz
-IMAGE_NAME := h2o-23-package
+IMAGE_NAME := h2o-23-ossl-package
 centos6: IMAGE_NAME := $(IMAGE_NAME)-ce6
 centos7: IMAGE_NAME := $(IMAGE_NAME)-ce7
 fedora: IMAGE_NAME := $(IMAGE_NAME)-fc23
@@ -12,6 +12,9 @@ rawhide: IMAGE_NAME := $(IMAGE_NAME)-rawhide
 opensuse: IMAGE_NAME := $(IMAGE_NAME)-suse13.2
 amzn1: IMAGE_NAME := $(IMAGE_NAME)-amzn1
 amzn2: IMAGE_NAME := $(IMAGE_NAME)-amzn1
+
+SOURCE_ARCHIVE_URL := https://github.com/h2o/h2o/archive/$(SOURCE_ARCHIVE)
+OPENSSL_ARCHIVE_URL := https://www.openssl.org/source/$(OPENSSL_ARCHIVE)
 
 .PHONY: all clean centos6 centos7 fedora rawhide opensuse amzn1 amzn2
 
@@ -25,12 +28,12 @@ amzn1: amzn1.build
 amzn2: amzn2.build
 
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
-	curl -SL https://github.com/h2o/h2o/archive/$(SOURCE_ARCHIVE) -o $@
+	curl -sSL $(SOURCE_ARCHIVE_URL) -o $@
 
-rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE):
-	curl -SL https://github.com/libressl-portable/portable/archive/v$(LIBRESSL_VERSION).tar.gz -o $@
+rpmbuild/SOURCES/$(OPENSSL_ARCHIVE):
+	curl -sSL $(OPENSSL_ARCHIVE_URL) -o $@
 
-%.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE)
+%.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/$(OPENSSL_ARCHIVE)
 	[ -d $@.bak ] && rm -rf $@.bak || :
 	[ -d $@ ] && mv $@ $@.bak || :
 	cp Dockerfile.$* Dockerfile

@@ -18,12 +18,12 @@
 %endif
 %endif
 
-%define libressl_version 2.8.0
+%define openssl_version 1.1.1-pre9
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.3.0
-Release: 0.2.beta1.3%{?dist}
+Release: 0.2.beta1.ossl.1%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta1.tar.gz
 Source1: index.html
@@ -32,7 +32,7 @@ Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
-Source100: libressl-%{libressl_version}.tar.gz
+Source100: openssl-%{openssl_version}.tar.gz
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -74,16 +74,22 @@ which allow you to build your own software using H2O.
 
 %prep
 %setup -q -n h2o-%{version}-beta1
-%define libressl_build %{_tmppath}/%{name}-%{version}-%{release}-libressl-build
-mkdir -p %{libressl_build}
-cat %{SOURCE100} | tar -zx -C %{libressl_build} --strip-components=1 -f -
+%define openssl_build %{_tmppath}/%{name}-%{version}-%{release}-openssl-build
+mkdir -p %{openssl_build}
+cat %{SOURCE100} | tar -zx -C %{openssl_build} --strip-components=1 -f -
 
 %build
-# build LibreSSL
-pushd %{libressl_build}
-%define libressl_root %{_tmppath}/%{name}-%{version}-%{release}-libressl-root
-./autogen.sh
-./configure --disable-shared --prefix=%{libressl_root} --libdir=%{libressl_root}/lib --with-pic
+# build OpenSSL
+pushd %{openssl_build}
+%define openssl_root %{_tmppath}/%{name}-%{version}-%{release}-openssl-root
+./config \
+    --release \
+    --prefix=%{openssl_root} \
+    --libdir=%{openssl_root}/lib \
+    --with-rand-seed=devrandom \
+    no-asm \
+    no-comp \
+    no-shared
 make %{?_smp_mflags}
 make install
 popd
@@ -95,8 +101,8 @@ cmake \
     -DCMAKE_C_FLAGS="-std=gnu99" \
     -DCMAKE_CXX_FLAGS="-std=gnu++0x" \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-    -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
-    -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
+    -DCMAKE_INCLUDE_PATH=%{openssl_root}/include \
+    -DCMAKE_LIBRARY_PATH=%{openssl_root}/lib \
     -DCMAKE_EXE_LINKER_FLAGS_INIT="-lrt" \
     -DCMAKE_SHARED_LINKER_FLAGS_INIT="-lrt" \
     .
@@ -109,8 +115,8 @@ cmake \
     -DCMAKE_C_FLAGS="-std=gnu99" \
     -DCMAKE_CXX_FLAGS="-std=gnu++0x" \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-    -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
-    -DCMAKE_LIBRARY_PATH=%{libressl_root}/lib \
+    -DCMAKE_INCLUDE_PATH=%{openssl_root}/include \
+    -DCMAKE_LIBRARY_PATH=%{openssl_root}/lib \
     -DBUILD_SHARED_LIBS=on \
     -DCMAKE_EXE_LINKER_FLAGS_INIT="-lrt" \
     -DCMAKE_SHARED_LINKER_FLAGS_INIT="-lrt" \
@@ -312,6 +318,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Thu Aug 23 2018 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.1.beta1.ossl.1
+- Rebuild with OpenSSL 1.1.1 beta 7 (pre 9)
+
 * Mon Aug  6 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-5
 - Rebuild with LibreSSL 2.8.0
 
