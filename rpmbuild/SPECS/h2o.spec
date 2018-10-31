@@ -18,12 +18,12 @@
 %endif
 %endif
 
-%define libressl_version 2.8.0
+%define libressl_version 2.8.1
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.2.5
-Release: 5%{?dist}
+Release: 6%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.2.5.tar.gz
 Source1: index.html
@@ -84,7 +84,6 @@ cat %{SOURCE100} | tar -zx -C %{libressl_build} --strip-components=1 -f -
 # build LibreSSL
 pushd %{libressl_build}
 %define libressl_root %{_tmppath}/%{name}-%{version}-%{release}-libressl-root
-./autogen.sh
 ./configure --disable-shared --prefix=%{libressl_root} --libdir=%{libressl_root}/lib --with-pic
 make %{?_smp_mflags}
 make install
@@ -313,6 +312,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Thu Sep 27 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-6
+- Rebuild with LibreSSL 2.8.1
+
 * Mon Aug  6 2018 AIZAWA Hina <hina@bouhime.com> - 2.2.5-5
 - Rebuild with LibreSSL 2.8.0
 
