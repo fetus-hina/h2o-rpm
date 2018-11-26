@@ -11,6 +11,7 @@ rm -rf $REPO_DIR h2o-info.mk libressl-info.mk
 
 docker pull centos:7
 rm -rf centos7.build
+make clean
 make centos7
 find centos7.build -type f -name '*.rpm' | xargs ./sign.exp
 mkdir -p /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-nightly/el7/x86_64/
