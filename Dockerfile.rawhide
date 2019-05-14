@@ -17,10 +17,11 @@ RUN dnf update -y && \
         rpmdevtools \
         ruby \
         ruby-devel \
-        tar && \
+        tar \
+        zlib-devel && \
     dnf clean all
 RUN rpmdev-setuptree
-RUN echo '%dist .jp3cki.fc30' >> /.rpmmacros
+RUN echo '%dist .jp3cki.fc31' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/
 RUN chown -R root:root /rpmbuild
 RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
