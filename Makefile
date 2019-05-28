@@ -1,5 +1,5 @@
 H2O_VERSION := 2.3.0-beta1
-LIBRESSL_VERSION := 2.9.1
+LIBRESSL_VERSION := 2.9.2
 
 SOURCE_ARCHIVE := v$(H2O_VERSION).tar.gz
 LIBRESSL_ARCHIVE := libressl-$(LIBRESSL_VERSION).tar.gz
@@ -25,10 +25,10 @@ amzn1: amzn1.build
 amzn2: amzn2.build
 
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
-	curl -SL https://github.com/h2o/h2o/archive/$(SOURCE_ARCHIVE) -o $@
+	curl -fSL https://github.com/h2o/h2o/archive/$(SOURCE_ARCHIVE) -o $@
 
 rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE):
-	curl -SL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-$(LIBRESSL_VERSION).tar.gz -o $@
+	curl -fSL https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-$(LIBRESSL_VERSION).tar.gz -o $@
 
 %.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/$(LIBRESSL_ARCHIVE)
 	[ -d $@.bak ] && rm -rf $@.bak || :
