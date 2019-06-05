@@ -1,5 +1,5 @@
 H2O_VERSION := 2.3.0-beta1
-OPENSSL_VERSION := 1.1.1-pre9
+OPENSSL_VERSION := 1.1.1b
 
 SOURCE_ARCHIVE := v$(H2O_VERSION).tar.gz
 OPENSSL_ARCHIVE := openssl-$(OPENSSL_VERSION).tar.gz
@@ -28,10 +28,10 @@ amzn1: amzn1.build
 amzn2: amzn2.build
 
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
-	curl -sSL $(SOURCE_ARCHIVE_URL) -o $@
+	curl -fsSL $(SOURCE_ARCHIVE_URL) -o $@
 
 rpmbuild/SOURCES/$(OPENSSL_ARCHIVE):
-	curl -sSL $(OPENSSL_ARCHIVE_URL) -o $@
+	curl -fsSL $(OPENSSL_ARCHIVE_URL) -o $@
 
 %.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/$(OPENSSL_ARCHIVE)
 	[ -d $@.bak ] && rm -rf $@.bak || :
