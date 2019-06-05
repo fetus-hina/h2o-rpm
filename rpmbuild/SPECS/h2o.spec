@@ -18,12 +18,12 @@
 %endif
 %endif
 
-%define openssl_version 1.1.1b
+%define openssl_version 1.1.1c
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.3.0
-Release: 0.2.beta1.ossl.3%{?dist}
+Release: 0.2.beta1.ossl.4%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta1.tar.gz
 Source1: index.html
@@ -263,7 +263,7 @@ fi
 %if 0%{?suse_version}
 %service_del_postun h2o.service
 %else
-%systemd_postun
+%systemd_postun h2o.service
 %endif
 if [ $1 -ge 1 ]; then
     systemctl status h2o >/dev/null 2>&1 || exit 0
@@ -318,6 +318,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Wed Jun  5 2019 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.2.beta1.ossl.4
+- Rebuild with OpenSSL 1.1.1c
+
+* Wed Feb 27 2019 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.2.beta1.ossl.3
+- Rebuild with OpenSSL 1.1.1b
+
 * Wed Feb 27 2019 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.2.beta1.ossl.3
 - Rebuild with OpenSSL 1.1.1b
 
