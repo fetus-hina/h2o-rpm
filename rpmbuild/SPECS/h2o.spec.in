@@ -44,6 +44,17 @@ as a library.
 
 
 
+%package httpclient
+Group: Applications/Internet
+Summary: H2O - HTTP Client
+Requires: openssl
+Requires: h2o-nightly-devel = %{version}-%{release}
+
+%description httpclient
+A HTTP Client.
+
+
+
 %package doc
 Group: System Environment/Daemons
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
@@ -56,7 +67,7 @@ Document files for H2O webserver.
 Group: Development/Libraries
 Summary: Development interfaces for H2O
 Requires: openssl-devel
-Requires: h2o-core = %{version}-%{release}
+Requires: h2o-nightly-core = %{version}-%{release}
 
 %description devel
 The h2o-devel package provides H2O library and its header files
@@ -187,6 +198,10 @@ rm -rf %{buildroot}
 
 %attr(0770,root,nobody) %dir /run/h2o
 %attr(0700,root,root) %dir %{_localstatedir}/log/h2o
+
+
+%files httpclient
+%{_bindir}/h2o-httpclient
 
 
 %files doc
