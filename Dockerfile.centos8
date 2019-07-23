@@ -1,0 +1,29 @@
+FROM oraclelinux:8
+ENV HOME /
+RUN yum update -y && \
+    yum install -y \
+        autoconf \
+        automake \
+        bison \
+        cmake \
+        gcc-c++ \
+        git \
+        libtool \
+        make \
+        openssl-devel \
+        perl \
+        redhat-rpm-config \
+        rpm-build \
+        rpmdevtools \
+        ruby \
+        ruby-devel \
+        tar && \
+    yum clean all && \
+    rm -rf /var/cache/yum
+RUN rpmdev-setuptree
+RUN echo '%dist .el8.jp3cki' >> /.rpmmacros
+ADD ./rpmbuild/ /rpmbuild/
+RUN chown -R root:root /rpmbuild
+RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
+RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
+CMD ["/bin/true"]
