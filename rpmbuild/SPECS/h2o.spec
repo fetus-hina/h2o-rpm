@@ -23,9 +23,9 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.3.0
-Release: 0.3.beta1.7%{?dist}
+Release: 0.4.beta2.1%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta1.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta2.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -73,7 +73,7 @@ The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
 %prep
-%setup -q -n h2o-%{version}-beta1
+%setup -q -n h2o-%{version}-beta2
 %define libressl_build %{_tmppath}/%{name}-%{version}-%{release}-libressl-build
 mkdir -p %{libressl_build}
 cat %{SOURCE100} | tar -zx -C %{libressl_build} --strip-components=1 -f -
@@ -287,6 +287,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %{_bindir}/h2o
+%{_bindir}/h2o-httpclient
 %{_datadir}/h2o
 %{_datadir}/doc/h2o
 %{_datadir}/man
@@ -311,6 +312,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Wed Aug 14 2019 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.4.beta2.1
+- Update to v2.3.0 beta 2
+
 * Fri May 24 2019 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.3.beta1.7
 - Rebuild with LibreSSL 2.9.2
 
