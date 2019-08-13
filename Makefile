@@ -5,11 +5,13 @@ TARGZ_FILE := h2o.tar.gz
 IMAGE_NAME := h2o-nightly-package
 
 centos7: IMAGE_NAME := $(IMAGE_NAME)-el7
+centos8: IMAGE_NAME := $(IMAGE_NAME)-el8
 
-.PHONY: all clean centos7
+.PHONY: all clean centos7 centos8
 
-all: h2o-info.mk libressl-info.mk centos7
+all: h2o-info.mk libressl-info.mk centos7 centos8
 centos7: centos7.build
+centos8: centos8.build
 
 repo:
 	git clone --depth=1 https://github.com/h2o/h2o.git $@
