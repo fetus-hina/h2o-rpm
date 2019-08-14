@@ -23,7 +23,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.3.0
-Release: 0.4.beta2.1%{?dist}
+Release: 0.4.beta2.2%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta2.tar.gz
 Source1: index.html
@@ -43,6 +43,7 @@ BuildRequires: devtoolset-7-gcc-c++, rh-ruby24-ruby
 BuildRequires: gcc-c++, ruby >= 1.9
 %endif
 Requires: openssl, perl
+Requires: h2o-libs = %{version}-%{release}
 %if %{with_systemd}
 %if 0%{?suse_version}
 BuildRequires: systemd-rpm-macros
@@ -62,11 +63,19 @@ Requires(post): chkconfig
 H2O is a very fast HTTP server written in C. It can also be used
 as a library.
 
+%package libs
+Group: Development/Libraries
+Summary: Shared libraries for H2O
+
+%description libs
+Shared libraries for H2O
+
 %package devel
 Group: Development/Libraries
 Summary: Development interfaces for H2O
 Requires: openssl-devel
 Requires: h2o = %{version}-%{release}
+Requires: h2o-libs = %{version}-%{release}
 
 %description devel
 The h2o-devel package provides H2O library and its header files
@@ -305,13 +314,20 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %attr(0700,root,root) %dir %{_localstatedir}/log/h2o
 
+%files libs
+%{_libdir}/libh2o*.so
+%{_libdir}/libh2o*.so.*
+
 %files devel
-%{_libdir}/libh2o-evloop.*
+%{_libdir}/libh2o*.a
 %{_libdir}/pkgconfig/libh2o*.pc
 %{_includedir}/h2o.h
 %{_includedir}/h2o
 
 %changelog
+* Wed Aug 14 2019 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.4.beta2.2
+- Split libs from devel
+
 * Wed Aug 14 2019 AIZAWA Hina <hina@bouhime.com> - 2.3.0-0.4.beta2.1
 - Update to v2.3.0 beta 2
 
