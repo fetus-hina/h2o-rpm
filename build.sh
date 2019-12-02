@@ -22,7 +22,7 @@ createrepo /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-nightly/el7/x86_
 cp -f centos7.build/SRPMS/h2o-*.rpm /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-nightly/el7/src/
 createrepo /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-nightly/el7/src/
 
-docker pull oraclelinux:8
+docker pull centos:8
 rm -rf centos8.build
 make clean
 make centos8
