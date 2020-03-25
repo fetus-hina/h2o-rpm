@@ -17,7 +17,6 @@ Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
 Source1000: libressl.tar.gz
-Patch100: h2o-limits.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -83,7 +82,6 @@ which allow you to build your own software using H2O.
 
 %prep
 %setup -q -n repo
-%patch100 -p1
 mkdir libressl-source
 tar -zx -C libressl-source --strip-components=1 -f %{SOURCE1000}
 

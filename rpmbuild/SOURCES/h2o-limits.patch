@@ -1,6 +1,0 @@
---- a/src/ssl.c
-+++ b/src/ssl.c
-@@ -23,2 +23,3 @@
- #include <inttypes.h>
-+#include <limits.h>
- #include <pthread.h>
