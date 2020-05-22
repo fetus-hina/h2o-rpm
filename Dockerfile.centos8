@@ -1,4 +1,4 @@
-FROM oraclelinux:8
+FROM centos:8
 ENV HOME /
 RUN yum update -y && \
     yum install -y \
