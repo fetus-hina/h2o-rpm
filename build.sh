@@ -2,7 +2,7 @@
 
 set -eu
 
-for i in 8 7 6; do
+for i in 8 7; do
   docker pull centos:$i
   rm -rf centos${i}.build
   make centos${i}
