@@ -17,12 +17,13 @@ Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
 Source1000: libressl.tar.gz
+Patch1: h2o-1a5efba658c703ff3d51ce203713c7ff1306a8f1.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: autoconf, automake, bison, cmake >= 2.8, git, libtool, openssl-devel, perl, pkgconfig, ruby >= 1.9, systemd-units
 %if 0%{?rhel} == 7
-BuildRequires: devtoolset-7-gcc-c++
+BuildRequires: devtoolset-8-gcc-c++
 %else
 BuildRequires: gcc-c++
 %endif
@@ -82,6 +83,7 @@ which allow you to build your own software using H2O.
 
 %prep
 %setup -q -n repo
+%patch1 -p1 -R
 mkdir libressl-source
 tar -zx -C libressl-source --strip-components=1 -f %{SOURCE1000}
 
@@ -96,6 +98,7 @@ make install
 popd
 
 cmake \
+    -DWITH_H2OLOG=off \
     -DWITH_MRUBY=on \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
@@ -104,6 +107,7 @@ cmake \
 make %{?_smp_mflags}
 
 cmake \
+    -DWITH_H2OLOG=off \
     -DWITH_MRUBY=on \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INCLUDE_PATH=%{libressl_root}/include \
