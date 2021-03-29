@@ -2,6 +2,7 @@
 *.build.bak
 /build.log
 /h2o-info.mk
+/libressl-info.mk
 /libressl-repo
 /repo
 Dockerfile

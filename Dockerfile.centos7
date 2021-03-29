@@ -9,6 +9,8 @@ RUN yum update -y && \
         autoconf \
         automake \
         bison \
+        brotli \
+        brotli-devel \
         cmake \
         devtoolset-8-gcc-c++ \
         git \

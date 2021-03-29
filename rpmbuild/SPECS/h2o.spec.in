@@ -53,7 +53,7 @@ as a library.
 %package httpclient
 Group: Applications/Internet
 Summary: H2O - HTTP Client
-Requires: openssl
+Requires: openssl, brotli
 Requires: h2o-nightly-devel = %{version}-%{release}
 
 %description httpclient
@@ -72,7 +72,7 @@ Document files for H2O webserver.
 %package devel
 Group: Development/Libraries
 Summary: Development interfaces for H2O
-Requires: openssl-devel
+Requires: openssl-devel, brotli
 Requires: h2o-nightly-core = %{version}-%{release}
 
 %description devel
@@ -91,7 +91,6 @@ tar -zx -C libressl-source --strip-components=1 -f %{SOURCE1000}
 # build libressl
 pushd libressl-source
 %define libressl_root %{_tmppath}/%{name}-%{version}-%{release}-libressl-root
-./autogen.sh
 ./configure --disable-shared --prefix=%{libressl_root} --libdir=%{libressl_root}/lib --with-pic
 make %{?_smp_mflags}
 make install
