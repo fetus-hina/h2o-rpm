@@ -18,12 +18,12 @@
 %endif
 %endif
 
-%define libressl_version 3.3.3
+%define libressl_version 3.4.3
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.3.0
-Release: 0.4.beta2.7%{?dist}
+Release: 0.4.beta2.9%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta2.tar.gz
 Source1: index.html
@@ -325,6 +325,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Sat Mar 19 2022 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.4.beta2.9
+- Rebuild with LibreSSL 3.4.3
+
+* Sun Dec 12 2021 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.4.beta2.8
+- Rebuild with LibreSSL 3.4.2
+
 * Fri May  7 2021 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.4.beta2.7
 - Rebuild with LibreSSL 3.3.3
 
