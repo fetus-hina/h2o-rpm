@@ -18,14 +18,14 @@
 %endif
 %endif
 
-%define openssl_version 1.1.1j
+%define openssl_version 1.1.1t
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.3.0
-Release: 0.3.beta2.ossl.1%{?dist}
+Release: 0.3.beta2.ossl.4%{?dist}
 URL: https://h2o.examp1e.net/
-Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta1.tar.gz
+Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta2.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
 Source3: h2o.init
@@ -33,6 +33,7 @@ Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
 Source100: openssl-%{openssl_version}.tar.gz
+Patch1: h2o-ruby-3.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -42,13 +43,17 @@ BuildRequires: devtoolset-7-gcc-c++, rh-ruby24-ruby
 %else
 BuildRequires: gcc-c++, ruby >= 1.9
 %endif
-Requires: openssl, perl
+Requires: openssl, /usr/bin/perl
 %if %{with_systemd}
 %if 0%{?suse_version}
 BuildRequires: systemd-rpm-macros
 %{?systemd_requires}
 %else
+%if 0%{?rhel} >= 9
+BuildRequires: systemd
+%else
 BuildRequires: systemd-units
+%endif
 Requires(preun): systemd
 Requires(postun): systemd
 Requires(post): systemd
@@ -72,11 +77,16 @@ Requires: h2o = %{version}-%{release}
 The h2o-devel package provides H2O library and its header files
 which allow you to build your own software using H2O.
 
+
 %prep
-%setup -q -n h2o-%{version}-beta1
+%setup -q -n h2o-%{version}-beta2
 %define openssl_build %{_tmppath}/%{name}-%{version}-%{release}-openssl-build
 mkdir -p %{openssl_build}
 cat %{SOURCE100} | tar -zx -C %{openssl_build} --strip-components=1 -f -
+%if 0%{?rhel} >= 9
+%patch1 -p1
+%endif
+
 
 %build
 # build OpenSSL
@@ -294,9 +304,12 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %{_bindir}/h2o
-%{_datadir}/h2o
+%{_bindir}/h2o-httpclient
 %{_datadir}/doc/h2o
+%{_datadir}/h2o
 %{_datadir}/man
+%{_libdir}/libh2o-evloop.so
+%{_libdir}/libh2o-evloop.so.*
 
 %if 0%{?suse_version} == 0
 %dir %{docroot}
@@ -312,12 +325,21 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0700,root,root) %dir %{_localstatedir}/log/h2o
 
 %files devel
-%{_libdir}/libh2o-evloop.*
+%{_libdir}/libh2o-evloop.a
 %{_libdir}/pkgconfig/libh2o*.pc
 %{_includedir}/h2o.h
 %{_includedir}/h2o
 
 %changelog
+* Wed Apr 19 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.3.beta2.ossl.4
+- H2O 2.3.0 beta 2 with OpenSSL 1.1.1t
+
+* Thu Mar 19 2022 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.3.beta2.ossl.3
+- H2O 2.3.0 beta 2 with OpenSSL 1.1.1n
+
+* Thu Feb 18 2021 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.3.beta2.ossl.2
+- H2O 2.3.0 beta 2 with OpenSSL 1.1.1k
+
 * Thu Feb 18 2021 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.3.beta2.ossl.1
 - H2O 2.3.0 beta 2 with OpenSSL 1.1.1j
 

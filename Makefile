@@ -1,5 +1,5 @@
 H2O_VERSION := 2.3.0-beta2
-OPENSSL_VERSION := 1.1.1j
+OPENSSL_VERSION := 1.1.1t
 
 SOURCE_ARCHIVE := v$(H2O_VERSION).tar.gz
 OPENSSL_ARCHIVE := openssl-$(OPENSSL_VERSION).tar.gz
@@ -8,6 +8,7 @@ IMAGE_NAME := h2o-23-ossl-package
 centos6: IMAGE_NAME := $(IMAGE_NAME)-el6
 centos7: IMAGE_NAME := $(IMAGE_NAME)-el7
 centos8: IMAGE_NAME := $(IMAGE_NAME)-el8
+centos9: IMAGE_NAME := $(IMAGE_NAME)-el9
 fedora: IMAGE_NAME := $(IMAGE_NAME)-fc23
 rawhide: IMAGE_NAME := $(IMAGE_NAME)-rawhide
 opensuse: IMAGE_NAME := $(IMAGE_NAME)-suse13.2
@@ -19,10 +20,11 @@ OPENSSL_ARCHIVE_URL := https://www.openssl.org/source/$(OPENSSL_ARCHIVE)
 
 .PHONY: all clean centos6 centos7 centos8 fedora rawhide opensuse amzn1 amzn2
 
-all: centos6 centos7 centos8 fedora rawhide amzn1 amzn2
+all: centos6 centos7 centos8 centos9 fedora rawhide amzn1 amzn2
 centos6: centos6.build
 centos7: centos7.build
 centos8: centos8.build
+centos9: centos9.build
 fedora: fedora.build
 rawhide: rawhide.build
 opensuse: opensuse.build
@@ -55,6 +57,7 @@ clean:
 	docker images | grep -q $(IMAGE_NAME)-el6 && docker rmi $(IMAGE_NAME)-el6 || true
 	docker images | grep -q $(IMAGE_NAME)-el7 && docker rmi $(IMAGE_NAME)-el7 || true
 	docker images | grep -q $(IMAGE_NAME)-el8 && docker rmi $(IMAGE_NAME)-el8 || true
+	docker images | grep -q $(IMAGE_NAME)-el9 && docker rmi $(IMAGE_NAME)-el9 || true
 	docker images | grep -q $(IMAGE_NAME)-fc23 && docker rmi $(IMAGE_NAME)-fc23 || true
 	docker images | grep -q $(IMAGE_NAME)-rawhide && docker rmi $(IMAGE_NAME)-rawhide || true
 	docker images | grep -q $(IMAGE_NAME)-suse13.2 && docker rmi $(IMAGE_NAME)-suse13.2 || true
