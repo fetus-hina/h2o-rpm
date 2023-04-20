@@ -11,6 +11,7 @@ RUN yum update -y && \
         libtool \
         make \
         openssl-devel \
+        perl-IPC-Cmd \
         redhat-rpm-config \
         rpm-build \
         rpmdevtools \
