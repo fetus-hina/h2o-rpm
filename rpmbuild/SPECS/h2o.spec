@@ -23,7 +23,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.3.0
-Release: 0.4.beta2.9%{?dist}
+Release: 0.4.beta2.10%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta2.tar.gz
 Source1: index.html
@@ -33,6 +33,10 @@ Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
 Source100: libressl-%{libressl_version}.tar.gz
+
+# CVE-2023-30847, https://github.com/h2o/h2o/security/advisories/GHSA-p5hj-phwj-hrvx
+Patch1: h2o-3229.patch
+
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -86,6 +90,7 @@ which allow you to build your own software using H2O.
 %define libressl_build %{_tmppath}/%{name}-%{version}-%{release}-libressl-build
 mkdir -p %{libressl_build}
 cat %{SOURCE100} | tar -zx -C %{libressl_build} --strip-components=1 -f -
+%patch1 -p1
 
 %build
 # build LibreSSL
@@ -325,6 +330,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Fri Apr 28 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.4.beta2.10
+- Add a patch for CVE-2023-30847
+
 * Sat Mar 19 2022 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.4.beta2.9
 - Rebuild with LibreSSL 3.4.3
 
