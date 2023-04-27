@@ -23,7 +23,7 @@
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.3.0
-Release: 0.3.beta2.ossl.5%{?dist}
+Release: 0.3.beta2.ossl.6%{?dist}
 URL: https://h2o.examp1e.net/
 Source0: https://github.com/h2o/h2o/archive/v2.3.0-beta2.tar.gz
 Source1: index.html
@@ -33,7 +33,8 @@ Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
 Source100: openssl-%{openssl_version}.tar.gz
-Patch1: h2o-ruby-3.patch
+Patch1: h2o-3229.patch
+Patch2: h2o-ruby-3.patch
 License: MIT
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -83,8 +84,9 @@ which allow you to build your own software using H2O.
 %define openssl_build %{_tmppath}/%{name}-%{version}-%{release}-openssl-build
 mkdir -p %{openssl_build}
 cat %{SOURCE100} | tar -zx -C %{openssl_build} --strip-components=1 -f -
-%if 0%{?rhel} >= 9
 %patch1 -p1
+%if 0%{?rhel} >= 9
+%patch2 -p1
 %endif
 
 
@@ -331,6 +333,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/h2o
 
 %changelog
+* Fri Apr 28 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.3.beta2.ossl.6
+- Add a patch for CVE-2023-30847
+
 * Thu Apr 20 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-0.3.beta2.ossl.5
 - H2O 2.3.0 beta 2 with OpenSSL 3.0.8
 
