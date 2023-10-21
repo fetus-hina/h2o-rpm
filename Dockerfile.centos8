@@ -17,7 +17,11 @@ RUN yum update -y && \
         rpmdevtools \
         ruby \
         ruby-devel \
-        tar && \
+        rubygem-rake \
+        systemd-rpm-macros \
+        tar \
+        zlib-devel \
+          && \
     yum clean all && \
     rm -rf /var/cache/yum
 RUN rpmdev-setuptree

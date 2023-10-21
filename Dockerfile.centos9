@@ -1,6 +1,7 @@
-FROM fedora:rawhide
+FROM rockylinux:9
 ENV HOME /
-RUN dnf update -y && \
+RUN dnf module enable -y ruby:3.1 && \
+    dnf distro-sync -y && \
     dnf install -y \
         autoconf \
         automake \
@@ -17,11 +18,15 @@ RUN dnf update -y && \
         rpmdevtools \
         ruby \
         ruby-devel \
+        rubygem-rake \
+        systemd-rpm-macros \
         tar \
-        zlib-devel && \
-    dnf clean all
+        zlib-devel \
+          && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 RUN rpmdev-setuptree
-RUN echo '%dist .jp3cki.fc31' >> /.rpmmacros
+RUN echo '%dist .el9.jp3cki' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/
 RUN chown -R root:root /rpmbuild
 RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec

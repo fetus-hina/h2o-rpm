@@ -1,28 +1,33 @@
 FROM centos:7
 ENV HOME /
 RUN yum update -y && \
+    yum install -y centos-release-scl && \
     yum install -y \
         autoconf \
         automake \
         bison \
         cmake \
-        gcc-c++ \
+        devtoolset-9-gcc-c++ \
         git \
         libtool \
         make \
         openssl-devel \
         redhat-rpm-config \
+        rh-ruby30-devel \
+        rh-ruby30-ruby \
+        rh-ruby30-rubygem-rake \
         rpm-build \
         rpmdevtools \
-        ruby \
-        ruby-devel \
-        tar && \
+        systemd-rpm-macros \
+        tar \
+        zlib-devel \
+          && \
     yum clean all && \
     rm -rf /var/cache/yum
 RUN rpmdev-setuptree
 RUN echo '%dist .el7.jp3cki' >> /.rpmmacros
 ADD ./rpmbuild/ /rpmbuild/
 RUN chown -R root:root /rpmbuild
-RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
+RUN scl enable devtoolset-9 rh-ruby30 -- rpmbuild -ba /rpmbuild/SPECS/h2o.spec
 RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
 CMD ["/bin/true"]

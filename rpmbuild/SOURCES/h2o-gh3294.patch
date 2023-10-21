@@ -1,0 +1,40 @@
+From 12c1418145ef20e44fd840e80c53e280a6efe4d6 Mon Sep 17 00:00:00 2001
+From: AIZAWA Hina <hina@fetus.jp>
+Date: Thu, 12 Oct 2023 12:57:16 +0900
+Subject: [PATCH] Fix a build error on CMake < 3.0 systems
+
+The project requires CMake version 2.8.12 as a minimum, but actually
+a build error occurs on systems with less than 3.0.
+
+The error is as follows:
+```
+  CMake Error at CMakeLists.txt:24 (CMAKE_POLICY):
+    Policy "CMP0042" is not known to this version of CMake.
+
+  (snip)
+
+  -- Configuring incomplete, errors occurred!
+```
+
+The document(*) says "This policy was introduced in CMake version 3.0",
+so avoid the error by inserting the version guard.
+  (*) https://cmake.org/cmake/help/v3.0/policy/CMP0042.html
+---
+ CMakeLists.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0116ef9eb2..45531b5493 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -21,7 +21,9 @@
+ 
+ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
+ CMAKE_POLICY(SET CMP0003 NEW)
+-CMAKE_POLICY(SET CMP0042 NEW)
++IF (NOT CMAKE_VERSION VERSION_LESS 3.0)
++  CMAKE_POLICY(SET CMP0042 NEW)
++ENDIF()
+ 
+ PROJECT(h2o)
+ 
