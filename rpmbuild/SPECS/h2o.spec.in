@@ -18,10 +18,10 @@
 %endif
 %endif
 
-%define gitdate 20231011
-%define gitref_l b311c049d433a421e00bc52c442d47f373b949a1
-%define gitref_s b311c04
-%define rebuild 0
+%define gitdate @H2O_GIT_DATE@
+%define gitref_l @H2O_GIT_REF@
+%define gitref_s @H2O_GIT_REF_SHORT@
+%define rebuild @H2O_GIT_DATE_REBUILD@
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
@@ -35,8 +35,6 @@ Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
-
-Patch0: h2o-gh3294.patch
 
 License: MIT
 Group: System Environment/Daemons
@@ -58,14 +56,10 @@ BuildRequires: rubygem-rake
 %else
 %if 0%{?rhel} == 6
 BuildRequires: devtoolset-7-gcc-c++
-# BuildRequires: rh-ruby24-ruby
 %else
 BuildRequires: devtoolset-9-gcc-c++
-# BuildRequires: rh-ruby30-ruby
-# BuildRequires: rh-ruby30-rubygem-rake
 %endif
 %endif
-# Requires: h2o-libs = %{version}-%{release}
 Requires: openssl
 Requires: perl-interpreter
 %if %{with_systemd}
@@ -97,29 +91,9 @@ Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Document files for H2O webserver.
 
 
-# %package libs
-# Group: Development/Libraries
-# Summary: Shared libraries for H2O
-# 
-# %description libs
-# Shared libraries for H2O
-# 
-# %package devel
-# Group: Development/Libraries
-# Summary: Development interfaces for H2O
-# Requires: openssl-devel
-# Requires: h2o = %{version}-%{release}
-# Requires: h2o-libs = %{version}-%{release}
-# 
-# %description devel
-# The h2o-devel package provides H2O library and its header files
-# which allow you to build your own software using H2O.
 
 %prep
 %setup -q -n h2o-%{gitref_l}
-
-# https://github.com/h2o/h2o/pull/3294 for EL7
-%patch0 -p1
 
 %build
 # Build H2O
@@ -300,6 +274,7 @@ fi
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+
 %files
 %defattr(-,root,root)
 
@@ -325,6 +300,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %attr(0700,root,root) %dir %{_localstatedir}/log/h2o
 
+
 %files doc
 %{_datadir}/doc/h2o
 
@@ -334,17 +310,11 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{docroot}/html/index.html
 %endif
 
-# %files libs
-# %{_libdir}/libh2o*.so
-# %{_libdir}/libh2o*.so.*
-# 
-# %files devel
-# %{_libdir}/libh2o*.a
-# %{_libdir}/pkgconfig/libh2o*.pc
-# %{_includedir}/h2o.h
-# %{_includedir}/h2o
 
 %changelog
+* Sat Oct 21 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231020.0.9b260ce
+- Follow upstream's master branch
+
 * Thu Oct 12 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231011.0.b311c04
 - Follow upstream's master branch
 
