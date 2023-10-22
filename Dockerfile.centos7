@@ -12,6 +12,7 @@ RUN yum update -y && \
         libtool \
         make \
         openssl-devel \
+        perl-IPC-Cmd \
         redhat-rpm-config \
         rh-ruby30-devel \
         rh-ruby30-ruby \

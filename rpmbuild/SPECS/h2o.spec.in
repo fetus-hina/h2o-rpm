@@ -23,6 +23,13 @@
 %define gitref_s @H2O_GIT_REF_SHORT@
 %define rebuild @H2O_GIT_DATE_REBUILD@
 
+%define openssl_version @OPENSSL_VERSION@
+%if 0%{?rhel} >= 9
+%define openssl_static 0
+%else
+%define openssl_static 1
+%endif
+
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
 Name: h2o
 Version: 2.3.0
@@ -35,6 +42,10 @@ Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
+
+%if %{openssl_static}
+Source1000: h2o-openssl-%{openssl_version}.tar.gz
+%endif
 
 License: MIT
 Group: System Environment/Daemons
@@ -59,6 +70,9 @@ BuildRequires: devtoolset-7-gcc-c++
 %else
 BuildRequires: devtoolset-9-gcc-c++
 %endif
+%endif
+%if %{openssl_static}
+BuildRequires: perl-IPC-Cmd
 %endif
 Requires: openssl
 Requires: perl-interpreter
@@ -95,7 +109,32 @@ Document files for H2O webserver.
 %prep
 %setup -q -n h2o-%{gitref_l}
 
+# prepare openssl
+%if %{openssl_static}
+%define openssl_build %{_tmppath}/%{name}-%{version}-%{release}-openssl-build
+mkdir -p %{openssl_build}
+tar -z -x -f %{SOURCE1000} -C %{openssl_build} --strip-components=1
+%endif
+
+
 %build
+# build OpenSSL
+%if %{openssl_static}
+pushd %{openssl_build}
+%define openssl_root %{_tmppath}/%{name}-%{version}-%{release}-openssl-root
+./config \
+  --release \
+  --prefix=%{openssl_root} \
+  --libdir=%{openssl_root}/lib \
+  --with-rand-seed=devrandom \
+  no-asm \
+  no-comp \
+  no-shared
+make %{?_smp_mflags}
+make install
+popd
+%endif
+
 # Build H2O
 cmake \
     -DWITH_H2OLOG=off \
@@ -103,6 +142,11 @@ cmake \
     -DWITH_MRUBY=on \
 %else
     -DWITH_MRUBY=off \
+%endif
+%if %{openssl_static}
+    -DOPENSSL_ROOT_DIR=%{openssl_root} \
+    -DCMAKE_INCLUDE_PATH=%{openssl_root}/include \
+    -DCMAKE_LIBRARY_PATH=%{openssl_root}/lib \
 %endif
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     .
@@ -312,6 +356,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct 23 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231020.1.9b260ce
+- Static link OpenSSL (el7, el8)
+
 * Sat Oct 21 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231020.0.9b260ce
 - Follow upstream's master branch
 
