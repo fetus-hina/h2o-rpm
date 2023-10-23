@@ -25,9 +25,11 @@
 
 %define openssl_version @OPENSSL_VERSION@
 %if 0%{?rhel} >= 9
-%define openssl_static 0
+  %define openssl_static 0
+  %define x64_level x86-64-v2
 %else
-%define openssl_static 1
+  %define openssl_static 1
+  %define x64_level x86-64
 %endif
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
@@ -129,14 +131,21 @@ pushd %{openssl_build}
   --with-rand-seed=devrandom \
   no-asm \
   no-comp \
-  no-shared
+  no-shared \
+  no-tests \
+  no-zlib \
+  CFLAGS="-O3 -march=%{x64_level} -mtune=generic -DNDEBUG" \
+  CXXFLAGS="-O3 -march=%{x64_level} -mtune=generic -DNDEBUG"
 make %{?_smp_mflags}
-make install
+make install_sw
 popd
 %endif
 
 # Build H2O
 cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_C_FLAGS="-O2 -march=%{x64_level} -mtune=generic" \
+    -DCMAKE_CXX_FLAGS="-O2 -march=%{x64_level} -mtune=generic" \
     -DWITH_H2OLOG=off \
 %if 0%{?rhel} >= 8
     -DWITH_MRUBY=on \
@@ -356,6 +365,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct 23 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231020.2.9b260ce
+- Adjust build options
+
 * Mon Oct 23 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231020.1.9b260ce
 - Static link OpenSSL (el7, el8)
 
