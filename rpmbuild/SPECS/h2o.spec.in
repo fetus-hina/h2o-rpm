@@ -365,6 +365,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Oct 27 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231027.0.e42f8ef
+- Update to e42f8ef18761fff6dd303e4f8d22a80c853501e9
+
 * Wed Oct 25 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231020.4.9b260ce
 - Rebuild with OpenSSL 3.1.4
 
