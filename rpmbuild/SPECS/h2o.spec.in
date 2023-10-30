@@ -94,6 +94,12 @@ Requires(post): systemd
 Requires: initscripts >= 8.36
 Requires(post): chkconfig
 %endif
+%if 0%{?rhel} >= 8
+Suggests: h2o-doc = %{version}-%{release}
+%else
+Requires: h2o-doc = %{version}-%{release}
+%endif
+
 
 %description
 H2O is a very fast HTTP server written in C. It can also be used
@@ -134,8 +140,8 @@ pushd %{openssl_build}
   no-shared \
   no-tests \
   no-zlib \
-  CFLAGS="-O3 -march=%{x64_level} -mtune=generic -DNDEBUG" \
-  CXXFLAGS="-O3 -march=%{x64_level} -mtune=generic -DNDEBUG"
+  CFLAGS="-O2 -march=%{x64_level} -mtune=generic -DNDEBUG" \
+  CXXFLAGS="-O2 -march=%{x64_level} -mtune=generic -DNDEBUG"
 make %{?_smp_mflags}
 make install_sw
 popd
@@ -150,6 +156,7 @@ cmake \
 %if 0%{?rhel} >= 8
     -DWITH_MRUBY=on \
 %else
+    -DWITH_DTRACE=off \
     -DWITH_MRUBY=off \
 %endif
 %if %{openssl_static}
@@ -342,9 +349,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rc.d/init.d/h2o
 %endif
 
-%{_bindir}/h2o*
+%{_bindir}/h2o
 %{_datadir}/h2o
 %{_datadir}/man
+
+%if 0%{?suse_version} == 0
+%dir %{docroot}
+%dir %{docroot}/html
+%config(noreplace) %{docroot}/html/index.html
+%endif
 
 %if %{with_systemd}
 %attr(0770,root,nobody) %dir /run/h2o
@@ -357,14 +370,11 @@ rm -rf $RPM_BUILD_ROOT
 %files doc
 %{_datadir}/doc/h2o
 
-%if 0%{?suse_version} == 0
-%dir %{docroot}
-%dir %{docroot}/html
-%config(noreplace) %{docroot}/html/index.html
-%endif
-
 
 %changelog
+* Sun Oct 29 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231027.2.e42f8ef
+- Fix /var/www/html/index.html installation
+
 * Fri Oct 27 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231027.0.e42f8ef
 - Update to e42f8ef18761fff6dd303e4f8d22a80c853501e9
 
