@@ -372,6 +372,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct 30 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231030.0.e468ce4
+- Update to e468ce489790970cecd831926563bf9c8ade091c
+
 * Sun Oct 29 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231027.2.e42f8ef
 - Fix /var/www/html/index.html installation
 
