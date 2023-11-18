@@ -1,3 +1,6 @@
+* Sat Nov 18 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231118.1.4f31229e6
+- Version information includes git revision
+
 * Sat Nov 18 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231118.0.4f31229e6
 - Update H2O to revision 4f31229e6fb6804d4baa14a8e365a8071c91ca33
 

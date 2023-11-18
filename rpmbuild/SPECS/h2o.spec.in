@@ -150,8 +150,8 @@ popd
 # Build H2O
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_C_FLAGS="-O2 -march=%{x64_level} -mtune=generic" \
-    -DCMAKE_CXX_FLAGS="-O2 -march=%{x64_level} -mtune=generic" \
+    -DCMAKE_C_FLAGS="-O2 -march=%{x64_level} -mtune=generic -DH2O_GITREV=%{gitref_s}" \
+    -DCMAKE_CXX_FLAGS="-O2 -march=%{x64_level} -mtune=generic -DH2O_GITREV=%{gitref_s}" \
     -DWITH_H2OLOG=off \
 %if 0%{?rhel} >= 8
     -DWITH_MRUBY=on \
