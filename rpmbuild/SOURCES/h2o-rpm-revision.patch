@@ -1,0 +1,10 @@
+--- a/src/main.c
++++ b/src/main.c
+@@ -4605,6 +4605,7 @@ int main(int argc, char **argv)
+                 break;
+             case 'v':
+                 printf("h2o version " H2O_VERSION "\n");
++                printf("RPM revision: %s\n", H2O_TO_STR(H2O_RPM_REVISION));
+                 printf("OpenSSL: %s\n", OpenSSL_version(OPENSSL_VERSION));
+ #if H2O_USE_MRUBY
+                 printf(

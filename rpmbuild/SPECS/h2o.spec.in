@@ -45,6 +45,8 @@ Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
 
+Patch2000: h2o-rpm-revision.patch
+
 %if %{openssl_static}
 Source1000: h2o-openssl-%{openssl_version}.tar.gz
 %endif
@@ -116,6 +118,7 @@ Document files for H2O webserver.
 
 %prep
 %setup -q -n h2o-%{gitref_l}
+%patch2000 -p1
 
 # prepare openssl
 %if %{openssl_static}
@@ -148,10 +151,11 @@ popd
 %endif
 
 # Build H2O
+%define cmake_build_flags -O2 -march=%{x64_level} -mtune=generic -DH2O_GITREV=%{gitref_s} -DH2O_RPM_REVISION=%{name}-%{version}-%{release}
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_C_FLAGS="-O2 -march=%{x64_level} -mtune=generic -DH2O_GITREV=%{gitref_s}" \
-    -DCMAKE_CXX_FLAGS="-O2 -march=%{x64_level} -mtune=generic -DH2O_GITREV=%{gitref_s}" \
+    -DCMAKE_C_FLAGS="%{cmake_build_flags}" \
+    -DCMAKE_CXX_FLAGS="%{cmake_build_flags}" \
     -DWITH_H2OLOG=off \
 %if 0%{?rhel} >= 8
     -DWITH_MRUBY=on \

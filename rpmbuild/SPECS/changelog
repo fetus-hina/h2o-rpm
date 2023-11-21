@@ -1,3 +1,6 @@
+* Tue Nov 21 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231118.2.4f31229e6
+- Add RPM version info to `h2o -v` output
+
 * Sat Nov 18 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231118.1.4f31229e6
 - Version information includes git revision
 
