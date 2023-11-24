@@ -24,11 +24,10 @@
 %define rebuild @H2O_GIT_DATE_REBUILD@
 
 %define openssl_version @OPENSSL_VERSION@
+%define openssl_static 1
 %if 0%{?rhel} >= 9
-  %define openssl_static 0
   %define x64_level x86-64-v2
 %else
-  %define openssl_static 1
   %define x64_level x86-64
 %endif
 

@@ -16,15 +16,20 @@ for i in 9 8 7; do
 
   if [ ${DEPLOY:-0} -ne 0 ]; then
     echo "Deploying el${i}..."
+    if [ ${TEST:-0} -eq 0 ]; then
+      DEPLOY_TARGET=h2o-rolling
+    else
+      DEPLOY_TARGET=h2o-rolling-testing
+    fi
 
-    mkdir -p /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-rolling/el${i}/x86_64/
-    mkdir -p /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-rolling/el${i}/src/
-    cp -f centos${i}.build/RPMS/x86_64/h2o-*.rpm /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-rolling/el${i}/x86_64/
-    cp -f centos${i}.build/SRPMS/h2o-*.rpm /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-rolling/el${i}/src/
-    createrepo /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-rolling/el${i}/x86_64/
-    createrepo /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-rolling/el${i}/src/
+    mkdir -p /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/x86_64/
+    mkdir -p /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/src/
+    cp -f centos${i}.build/RPMS/x86_64/h2o-*.rpm /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/x86_64/
+    cp -f centos${i}.build/SRPMS/h2o-*.rpm /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/src/
+    createrepo /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/x86_64/
+    createrepo /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/src/
 
-    pushd /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/h2o-rolling/el${i}
+    pushd /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}
       for dir in x86_64 src; do
         pushd ${dir}
           for hashfunc in md5sum sha1sum sha256sum; do
