@@ -1,3 +1,6 @@
+* Fri Dec 01 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231201.0.cec8046d9
+- Update H2O to revision cec8046d98b74732af007364de312a17abcf52b1
+
 * Fri Nov 24 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231118.3.4f31229e6
 - Build with OpenSSL 3.2.0
 - Enable Bundled OpenSSL on EL9 systems
