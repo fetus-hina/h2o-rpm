@@ -1,3 +1,10 @@
+* Fri Dec 15 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231215.0.5c78fc1e3
+- Update H2O to revision 5c78fc1e3e7fd987cf699c9684e5b8483608e492
+
+* Wed Dec 13 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231212.1.d67e81d03
+- Update H2O to revision d67e81d03be12a9d53dc8271af6530f40164cd35
+  https://github.com/h2o/h2o/security/advisories/GHSA-2ch5-p59c-7mv6
+
 * Tue Dec 12 2023 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20231212.0.44200874e
 - Update H2O to revision 44200874e2187acf55bf26b13e579be0f983eab1
 
