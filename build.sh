@@ -26,12 +26,17 @@ for i in 9 8 7; do
     mkdir -p /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/src/
     cp -f centos${i}.build/RPMS/x86_64/h2o-*.rpm /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/x86_64/
     cp -f centos${i}.build/SRPMS/h2o-*.rpm /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/src/
-    createrepo /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/x86_64/
-    createrepo /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}/src/
 
     pushd /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}
+      # Remove old packages
+      find x86_64 -type f -name 'h2o-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
+      find x86_64 -type f -name 'h2o-doc-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
+      find src -type f -name 'h2o-2.*.src.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
+
       for dir in x86_64 src; do
         pushd ${dir}
+          createrepo .
+
           for hashfunc in md5sum sha1sum sha256sum; do
             env ${hashfunc} *.rpm > ${hashfunc}.txt
           done
