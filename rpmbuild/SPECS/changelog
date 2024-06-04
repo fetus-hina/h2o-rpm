@@ -1,3 +1,9 @@
+* Wed Jun 05 2024 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20240517.1.aee409f9a
+- Build with OpenSSL 3.3.1
+
+* Fri May 24 2024 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20240517.0.aee409f9a
+- Update H2O to revision aee409f9ae648bbd3899d92e12481d05883b5aa3
+
 * Wed Apr 10 2024 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20240401.2.16ea5ef09
 - Build with OpenSSL 3.3.0
 
