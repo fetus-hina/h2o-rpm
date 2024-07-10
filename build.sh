@@ -2,7 +2,7 @@
 
 set -eu
 
-for i in 9 8 7; do
+for i in 9 8; do
   if [ $i -lt 8 ]; then
     DISTRO=centos
   else
