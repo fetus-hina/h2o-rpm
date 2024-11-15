@@ -9,13 +9,13 @@ OPENSSL_VERSION := 3.4.0
 SOURCE_ARCHIVE := h2o-$(H2O_GIT_REF).tar.gz
 TARGZ_FILE := h2o.tar.gz
 IMAGE_NAME := h2o-23-package
-centos8: IMAGE_NAME := $(IMAGE_NAME)-el8
-centos8: IMAGE_NAME := $(IMAGE_NAME)-el9
+el8: IMAGE_NAME := $(IMAGE_NAME)-el8
+el9: IMAGE_NAME := $(IMAGE_NAME)-el9
 
-.PHONY: all  centos8 centos9
-all: centos8 centos9
-centos8: centos8.build
-centos9: centos9.build
+.PHONY: all el8 el9
+all: el8 el9
+el8: el8.build
+el9: el9.build
 
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
 	curl -fsSL https://github.com/h2o/h2o/archive/$(H2O_GIT_REF).tar.gz -o $@
@@ -54,6 +54,5 @@ rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in rpmbuild/SPECS/changelog
 .PHONY: clean
 clean:
 	rm -rf *.build.bak *.build tmp Dockerfile
-	docker images | grep -q $(IMAGE_NAME)-el7 && docker rmi $(IMAGE_NAME)-el7 || true
 	docker images | grep -q $(IMAGE_NAME)-el8 && docker rmi $(IMAGE_NAME)-el8 || true
 	docker images | grep -q $(IMAGE_NAME)-el9 && docker rmi $(IMAGE_NAME)-el9 || true

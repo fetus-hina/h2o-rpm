@@ -2,7 +2,7 @@ H2O Unofficial RPM package builder
 ==================================
 
 This provides [H2O](https://h2o.examp1e.net/) RPM spec file and required files
-e.g. systemd service etc. to build RPM for RHEL/CentOS 7-9 systems.
+e.g. systemd service etc. to build RPM for RHEL-based 8-9 systems.
 
 This repository is a fork from [tatsushid/h2o-rpm](https://github.com/tatsushid/h2o-rpm).
 
@@ -24,13 +24,13 @@ If you'd like to build RPM for specific distribution, please run a command like
 following
 
 ```bash
-make centos9
+make el9
 ```
 
 Now this understands
 
-- centos8
-- centos9
+- el8
+- el9
 
 build options.
 
