@@ -29,7 +29,6 @@ make centos9
 
 Now this understands
 
-- centos7
 - centos8
 - centos9
 

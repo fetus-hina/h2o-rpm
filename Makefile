@@ -9,13 +9,11 @@ OPENSSL_VERSION := 3.4.0
 SOURCE_ARCHIVE := h2o-$(H2O_GIT_REF).tar.gz
 TARGZ_FILE := h2o.tar.gz
 IMAGE_NAME := h2o-23-package
-centos7: IMAGE_NAME := $(IMAGE_NAME)-el7
 centos8: IMAGE_NAME := $(IMAGE_NAME)-el8
 centos8: IMAGE_NAME := $(IMAGE_NAME)-el9
 
-.PHONY: all centos7 centos8 centos9
-all: centos7 centos8 centos9
-centos7: centos7.build
+.PHONY: all  centos8 centos9
+all: centos8 centos9
 centos8: centos8.build
 centos9: centos9.build
 
