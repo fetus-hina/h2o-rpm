@@ -355,6 +355,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/h2o
 %{_datadir}/h2o
 %{_datadir}/man
+%exclude %{_bindir}/h2olog
 
 %if 0%{?suse_version} == 0
 %dir %{docroot}
