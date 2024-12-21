@@ -1,6 +1,6 @@
 # ---- BEGIN VERSION BLOCK ----
 H2O_GIT_DATE := 20241221
-H2O_GIT_DATE_REBUILD := 0
+H2O_GIT_DATE_REBUILD := 1
 H2O_GIT_REF := ebcd7f47d89525fd93252a8ba99ca732abda0fdb
 H2O_GIT_REF_SHORT := ebcd7f47d
 OPENSSL_VERSION := 3.4.0
@@ -11,11 +11,13 @@ TARGZ_FILE := h2o.tar.gz
 IMAGE_NAME := h2o-23-package
 el8: IMAGE_NAME := $(IMAGE_NAME)-el8
 el9: IMAGE_NAME := $(IMAGE_NAME)-el9
+el10: IMAGE_NAME := $(IMAGE_NAME)-el10
 
-.PHONY: all el8 el9
-all: el8 el9
+.PHONY: all el8 el9 el10
+all: el8 el9 el10
 el8: el8.build
 el9: el9.build
+el10: el10.build
 
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
 	curl -fsSL https://github.com/h2o/h2o/archive/$(H2O_GIT_REF).tar.gz -o $@
@@ -56,3 +58,4 @@ clean:
 	rm -rf *.build.bak *.build tmp Dockerfile
 	docker images | grep -q $(IMAGE_NAME)-el8 && docker rmi $(IMAGE_NAME)-el8 || true
 	docker images | grep -q $(IMAGE_NAME)-el9 && docker rmi $(IMAGE_NAME)-el9 || true
+	docker images | grep -q $(IMAGE_NAME)-el10 && docker rmi $(IMAGE_NAME)-el10 || true

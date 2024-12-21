@@ -1,3 +1,6 @@
+* Sat Dec 21 2024 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20241221.1.ebcd7f47d
+- Prepare for EL10, enabled PIE
+
 * Sat Dec 21 2024 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20241221.0.ebcd7f47d
 - Update H2O to revision ebcd7f47d89525fd93252a8ba99ca732abda0fdb
 

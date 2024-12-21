@@ -25,10 +25,14 @@
 
 %define openssl_version @OPENSSL_VERSION@
 %define openssl_static 1
+%if 0%{?rhel} >= 10
+  %define x64_level x86-64-v3
+%else
 %if 0%{?rhel} >= 9
   %define x64_level x86-64-v2
 %else
   %define x64_level x86-64
+%endif
 %endif
 
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
@@ -117,7 +121,11 @@ Document files for H2O webserver.
 
 %prep
 %setup -q -n h2o-%{gitref_l}
+%if 0%{?rhel} >= 10
+%patch 2000 -p1
+%else
 %patch2000 -p1
+%endif
 
 # prepare openssl
 %if %{openssl_static}
@@ -137,6 +145,7 @@ pushd %{openssl_build}
   --prefix=%{openssl_root} \
   --libdir=%{openssl_root}/lib \
   --with-rand-seed=devrandom \
+  enable-pie \
   no-asm \
   no-comp \
   no-shared \
@@ -150,7 +159,7 @@ popd
 %endif
 
 # Build H2O
-%define cmake_build_flags -O2 -march=%{x64_level} -mtune=generic -DH2O_GITREV=%{gitref_s} -DH2O_RPM_REVISION=%{name}-%{version}-%{release}
+%define cmake_build_flags -O2 -march=%{x64_level} -mtune=generic -fPIE -DH2O_GITREV=%{gitref_s} -DH2O_RPM_REVISION=%{name}-%{version}-%{release}
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_C_FLAGS="%{cmake_build_flags}" \
@@ -168,6 +177,9 @@ cmake \
     -DCMAKE_LIBRARY_PATH=%{openssl_root}/lib \
 %endif
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+%if 0%{?rhel} >= 10
+    -DZLIB_LIBRARY=/usr/lib64/libz.so.1 \
+%endif
     .
 make %{?_smp_mflags}
 
