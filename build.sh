@@ -2,7 +2,8 @@
 
 set -eu
 
-for i in 10 9 8; do
+# for i in 10 9 8; do
+for i in 9 8; do
   if [ $i -eq 10 ]; then
     DISTRO=centos
     docker pull ${DISTRO}:stream${i}
