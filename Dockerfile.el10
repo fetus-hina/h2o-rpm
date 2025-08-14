@@ -1,5 +1,4 @@
-# FROM rockylinux:10
-FROM quay.io/centos/centos:stream10
+FROM almalinux:10
 ENV HOME /
 RUN dnf distro-sync -y && \
     dnf install -y \

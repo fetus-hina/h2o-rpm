@@ -4,12 +4,11 @@ set -eu
 
 for i in 10 9 8; do
   if [ $i -eq 10 ]; then
-    DISTRO=centos
-    docker pull ${DISTRO}:stream${i}
+    DISTRO=almalinux
   else
     DISTRO=rockylinux
-    docker pull ${DISTRO}:${i}
   fi
+  docker pull ${DISTRO}:${i}
   rm -rf el${i}.build
   make el${i}
   find el${i}.build -type f -name 'h2o-debug*.rpm' -exec rm -f {} \;
