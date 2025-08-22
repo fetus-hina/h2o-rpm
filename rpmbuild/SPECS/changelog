@@ -1,3 +1,6 @@
+* Fri Aug 22 2025 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20250822.0.c61611c91
+- Update H2O to revision c61611c91b79683dc04a4ea30f3bcb8134cb450d
+
 * Thu Aug 14 2025 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20250813.0.4729b661e
 - Update H2O to revision 4729b661e3c6654198d2cc62997e1af58bef4b80
 - Build with OpenSSL 3.5.2
