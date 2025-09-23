@@ -1,4 +1,4 @@
-FROM almalinux:10
+FROM rockylinux/rockylinux:10
 ENV HOME /
 RUN dnf distro-sync -y && \
     dnf install -y \

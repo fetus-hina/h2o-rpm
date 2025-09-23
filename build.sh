@@ -4,7 +4,7 @@ set -eu
 
 for i in 10 9 8; do
   if [ $i -eq 10 ]; then
-    DISTRO=almalinux
+    DISTRO=rockylinux/rockylinux
   else
     DISTRO=rockylinux
   fi
