@@ -1,3 +1,6 @@
+* Wed Apr 08 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20260402.1.77288edcf
+- Build with OpenSSL 3.6.2
+
 * Thu Apr 02 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20260402.0.77288edcf
 - Update H2O to revision 77288edcfbed39faa2db47160d2c98915bdbd0c1
 
