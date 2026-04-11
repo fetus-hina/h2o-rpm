@@ -1,22 +1,7 @@
 %define docroot /var/www
 
-%if 0%{?rhel} >= 7
-  %global with_systemd 1
-%else
-  %global with_systemd 0
-%endif
-
-%if 0%{?rhel} >= 7
 %{?perl_default_filter}
 %global __requires_exclude perl\\(VMS|perl\\(Win32|perl\\(Server::Starter
-%else
-%if 0%{?rhel} == 6
-%{?filter_setup:
-%filter_requires_in %{_datadir}
-%filter_setup
-}
-%endif
-%endif
 
 %define gitdate @H2O_GIT_DATE@
 %define gitref_l @H2O_GIT_REF@
@@ -43,7 +28,6 @@ URL: https://h2o.examp1e.net/
 Source0: h2o-%{gitref_l}.tar.gz
 Source1: index.html
 Source2: h2o.logrotate
-Source3: h2o.init
 Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
@@ -67,38 +51,21 @@ BuildRequires: openssl-devel
 BuildRequires: perl
 BuildRequires: pkgconfig
 BuildRequires: zlib-devel
-%if 0%{?rhel} >= 8
 BuildRequires: gcc-c++
 BuildRequires: ruby
 BuildRequires: rubygem-rake
-%else
-%if 0%{?rhel} == 6
-BuildRequires: devtoolset-7-gcc-c++
-%else
-BuildRequires: devtoolset-9-gcc-c++
-%endif
-%endif
 %if %{openssl_static}
 BuildRequires: perl-IPC-Cmd
 %endif
 Requires: openssl
 Requires: perl-interpreter
-%if %{with_systemd}
 %if 0%{?rhel} < 9
 BuildRequires: systemd-units
 %endif
 Requires(preun): systemd
 Requires(postun): systemd
 Requires(post): systemd
-%else
-Requires: initscripts >= 8.36
-Requires(post): chkconfig
-%endif
-%if 0%{?rhel} >= 8
 Suggests: h2o-doc = %{version}-%{release}
-%else
-Requires: h2o-doc = %{version}-%{release}
-%endif
 
 
 %description
@@ -160,12 +127,7 @@ cmake \
     -DCMAKE_C_FLAGS="%{cmake_build_flags}" \
     -DCMAKE_CXX_FLAGS="%{cmake_build_flags}" \
     -DWITH_H2OLOG=off \
-%if 0%{?rhel} >= 8
     -DWITH_MRUBY=on \
-%else
-    -DWITH_DTRACE=off \
-    -DWITH_MRUBY=off \
-%endif
 %if %{openssl_static}
     -DOPENSSL_ROOT_DIR=%{openssl_root} \
     -DCMAKE_INCLUDE_PATH=%{openssl_root}/include \
@@ -186,10 +148,6 @@ make %{?_smp_mflags}
 #     -DBUILD_SHARED_LIBS=on \
 #     .
 # make %{?_smp_mflags}
-
-%if !%{with_systemd}
-sed -i -e 's,\( *\).*systemctl.* >,\1/sbin/service h2o reload >,' %{SOURCE2}
-%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -216,7 +174,6 @@ install -m 644 -p $RPM_SOURCE_DIR/index.html \
 # Set up /var directories
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/h2o
 
-%if %{with_systemd}
 # Install systemd service files
 mkdir -p $RPM_BUILD_ROOT%{_unitdir}
 install -m 644 -p $RPM_SOURCE_DIR/h2o.service \
@@ -226,14 +183,6 @@ mkdir -p $RPM_BUILD_ROOT/run/h2o
 mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/tmpfiles.d
 install -m 644 -p $RPM_SOURCE_DIR/h2o-tmpfile.conf \
         $RPM_BUILD_ROOT%{_prefix}/lib/tmpfiles.d/h2o.conf
-%else
-# install SYSV init stuff
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d
-install -m 755 -p $RPM_SOURCE_DIR/h2o.init \
-	$RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/h2o
-
-mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/run/h2o
-%endif
 
 # install log rotation stuff
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d
@@ -251,12 +200,7 @@ rm -rf $RPM_BUILD_ROOT/usr/lib64/pkgconfig/libh2o*
 %pre
 
 %post
-%if %{with_systemd}
 %systemd_post h2o.service
-%else
-# Register the h2o service
-/sbin/chkconfig --add h2o
-%endif
 
 umask 037
 if [ -f %{sslkey} -o -f %{sslcert} ]; then
@@ -295,28 +239,14 @@ if [ -f %{sslcert} ]; then
 fi
 
 %preun
-%if %{with_systemd}
 %systemd_preun h2o.service
-%else
-if [ $1 = 0 ]; then
-	/sbin/service h2o stop > /dev/null 2>&1
-	/sbin/chkconfig --del h2o
-fi
-%endif
 
 %postun
-%if %{with_systemd}
 %systemd_postun h2o.service
 if [ $1 -ge 1 ]; then
     systemctl status h2o >/dev/null 2>&1 || exit 0
     systemctl reload h2o >/dev/null 2>&1 || echo "Binary upgrade failed, please check h2o's error.log"
 fi
-%else
-if [ $1 -ge 1 ]; then
-    service h2o status >/dev/null 2>&1 || exit 0
-    service h2o reload >/dev/null 2>&1 || echo "Binary upgrade failed, please check h2o's error.log"
-fi
-%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -329,12 +259,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/h2o/h2o.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/h2o
 
-%if %{with_systemd}
 %{_unitdir}/h2o.service
 %{_prefix}/lib/tmpfiles.d/h2o.conf
-%else
-%{_sysconfdir}/rc.d/init.d/h2o
-%endif
 
 %{_bindir}/h2o
 %{_datadir}/h2o
@@ -345,11 +271,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{docroot}/html
 %config(noreplace) %{docroot}/html/index.html
 
-%if %{with_systemd}
 %attr(0770,root,nobody) %dir /run/h2o
-%else
-%attr(0710,root,nobody) %dir %{_localstatedir}/run/h2o
-%endif
 %attr(0700,root,root) %dir %{_localstatedir}/log/h2o
 
 
