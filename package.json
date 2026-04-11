@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "tsx": "^4"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^6"
+  }
+}
