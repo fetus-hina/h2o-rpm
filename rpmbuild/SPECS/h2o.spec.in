@@ -1,6 +1,6 @@
 %define docroot /var/www
 
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7 || 0%{?suse_version} >= 1210
+%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
   %global with_systemd 1
 %else
   %global with_systemd 0
@@ -84,17 +84,12 @@ BuildRequires: perl-IPC-Cmd
 Requires: openssl
 Requires: perl-interpreter
 %if %{with_systemd}
-%if 0%{?suse_version}
-BuildRequires: systemd-rpm-macros
-%{?systemd_requires}
-%else
 %if 0%{?rhel} < 9
 BuildRequires: systemd-units
 %endif
 Requires(preun): systemd
 Requires(postun): systemd
 Requires(post): systemd
-%endif
 %else
 Requires: initscripts >= 8.36
 Requires(post): chkconfig
@@ -196,10 +191,6 @@ make %{?_smp_mflags}
 sed -i -e 's,\( *\).*systemctl.* >,\1/sbin/service h2o reload >,' %{SOURCE2}
 %endif
 
-%if 0%{?suse_version}
-sed -i -e '/localhost:443/,/file.dir/s/^/#/' -e 's|\(file.dir: \).*|\1/srv/www/htdocs|' %{SOURCE5}
-%endif
-
 %install
 rm -rf $RPM_BUILD_ROOT
 
@@ -217,12 +208,10 @@ mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/h2o
 install -m 644 -p $RPM_SOURCE_DIR/h2o.conf \
         $RPM_BUILD_ROOT%{_sysconfdir}/h2o/h2o.conf
 
-%if 0%{?suse_version} == 0
 # docroot
 mkdir -p $RPM_BUILD_ROOT%{docroot}/html
 install -m 644 -p $RPM_SOURCE_DIR/index.html \
         $RPM_BUILD_ROOT%{docroot}/html/index.html
-%endif
 
 # Set up /var directories
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/h2o
@@ -260,23 +249,15 @@ rm -rf $RPM_BUILD_ROOT/usr/lib64/pkgconfig/libh2o*
 %define sslkey %{_sysconfdir}/pki/tls/private/localhost.key
 
 %pre
-%if %{with_systemd} && 0%{?suse_version}
-%service_add_pre h2o.service
-%endif
 
 %post
 %if %{with_systemd}
-%if 0%{?suse_version}
-%service_add_post h2o.service
-%else
 %systemd_post h2o.service
-%endif
 %else
 # Register the h2o service
 /sbin/chkconfig --add h2o
 %endif
 
-%if 0%{?suse_version} == 0
 umask 037
 if [ -f %{sslkey} -o -f %{sslcert} ]; then
    exit 0
@@ -312,15 +293,10 @@ fi
 if [ -f %{sslcert} ]; then
    chgrp nobody %{sslcert}
 fi
-%endif
 
 %preun
 %if %{with_systemd}
-%if 0%{?suse_version}
-%service_del_preun h2o.service
-%else
 %systemd_preun h2o.service
-%endif
 %else
 if [ $1 = 0 ]; then
 	/sbin/service h2o stop > /dev/null 2>&1
@@ -330,11 +306,7 @@ fi
 
 %postun
 %if %{with_systemd}
-%if 0%{?suse_version}
-%service_del_postun h2o.service
-%else
 %systemd_postun h2o.service
-%endif
 if [ $1 -ge 1 ]; then
     systemctl status h2o >/dev/null 2>&1 || exit 0
     systemctl reload h2o >/dev/null 2>&1 || echo "Binary upgrade failed, please check h2o's error.log"
@@ -369,11 +341,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/man
 %exclude %{_bindir}/h2olog
 
-%if 0%{?suse_version} == 0
 %dir %{docroot}
 %dir %{docroot}/html
 %config(noreplace) %{docroot}/html/index.html
-%endif
 
 %if %{with_systemd}
 %attr(0770,root,nobody) %dir /run/h2o
