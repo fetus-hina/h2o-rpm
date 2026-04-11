@@ -1,12 +1,12 @@
 %define docroot /var/www
 
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
+%if 0%{?rhel} >= 7
   %global with_systemd 1
 %else
   %global with_systemd 0
 %endif
 
-%if 0%{?fedora} >= 15 || 0%{?rhel} >= 7
+%if 0%{?rhel} >= 7
 %{?perl_default_filter}
 %global __requires_exclude perl\\(VMS|perl\\(Win32|perl\\(Server::Starter
 %else
