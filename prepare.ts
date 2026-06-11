@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // ---- Configuration ----
 
 const OPENSSL_MINIMUM_VERSION = "3.0.0";
-const OPENSSL_MAXIMUM_VERSION = "4.0.0";
+const OPENSSL_MAXIMUM_VERSION = "5.0.0";
 const OPENSSL_BETA = false;
 
 const PACKAGE_BUILDER_NAME = "AIZAWA Hina";

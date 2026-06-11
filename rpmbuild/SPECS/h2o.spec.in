@@ -33,6 +33,7 @@ Source5: h2o.conf
 Source6: h2o-tmpfile.conf
 
 Patch2000: h2o-rpm-revision.patch
+Patch2001: h2o-openssl-no-engine.patch
 
 %if %{openssl_static}
 Source1000: h2o-openssl-%{openssl_version}.tar.gz
@@ -85,8 +86,10 @@ Document files for H2O webserver.
 %setup -q -n h2o-%{gitref_l}
 %if 0%{?rhel} >= 10
 %patch 2000 -p1
+%patch 2001 -p1
 %else
 %patch2000 -p1
+%patch2001 -p1
 %endif
 
 # prepare openssl
@@ -110,6 +113,7 @@ pushd %{openssl_build}
   enable-pie \
   no-asm \
   no-comp \
+  no-engine \
   no-shared \
   no-tests \
   no-zlib \

@@ -1,28 +1,32 @@
+Based on the OpenBSD ports patch:
 https://github.com/openbsd/ports/tree/c1521c4eb969ddf29306117ea125802a2644e734/www/h2o/patches
 
-Fix build with opaque RSA{,_METHOD} in LibreSSL 3.5. The relevant OpenSSL API
-has been available since LibreSSL 2.9. ECDSA support is thus also available.
-Instead of using ENGINE, use RSA_METHOD and ECDSA_METHOD.
+Make neverbleed work without the (deprecated, removed in OpenSSL 4.0)
+ENGINE API. When OPENSSL_NO_ENGINE is defined, store RSA_METHOD /
+EC_KEY_METHOD in neverbleed_t and attach them with RSA_set_method() /
+EC_KEY_set_method() instead of registering an ENGINE. The QAT offload
+support is disabled in that case, as it requires the ENGINE API.
 
-Index: deps/neverbleed/neverbleed.c
---- deps/neverbleed/neverbleed.c.orig
-+++ deps/neverbleed/neverbleed.c
-@@ -45,7 +45,7 @@
- #endif
- #include "neverbleed.h"
+Rebased onto the current H2O master (2026-06).
+
+--- a/deps/neverbleed/neverbleed.c
++++ b/deps/neverbleed/neverbleed.c
+@@ -76,7 +76,8 @@
+ #include <openssl/ssl.h>
  
--#if (!defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x1010000fL)
-+#if ((!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER >= 0x2090000fL) && OPENSSL_VERSION_NUMBER >= 0x1010000fL)
- #define OPENSSL_1_1_API 1
- #else
- #define OPENSSL_1_1_API 0
-@@ -683,7 +683,16 @@ static EVP_PKEY *create_pkey(neverbleed_t *nb, size_t 
+ #ifdef __linux
+-#if OPENSSL_VERSION_NUMBER >= 0x1010000fL && !defined(LIBRESSL_VERSION_NUMBER) && !defined(OPENSSL_IS_BORINGSSL)
++#if OPENSSL_VERSION_NUMBER >= 0x1010000fL && !defined(LIBRESSL_VERSION_NUMBER) && !defined(OPENSSL_IS_BORINGSSL) &&             \
++    !defined(OPENSSL_NO_ENGINE)
+ #define USE_OFFLOAD 1
+ #endif
+ #if defined(OPENSSL_IS_BORINGSSL) && defined(NEVERBLEED_BORINGSSL_USE_QAT)
+@@ -903,7 +904,15 @@
      exdata->nb = nb;
      exdata->key_index = key_index;
  
 +#ifdef OPENSSL_NO_ENGINE
-+    rsa = RSA_new();
-+    if (!rsa) {
++    if ((rsa = RSA_new()) == NULL) {
 +        fprintf(stderr, "no memory\n");
 +        abort();
 +    }
@@ -30,16 +34,15 @@ Index: deps/neverbleed/neverbleed.c
 +#else
      rsa = RSA_new_method(nb->engine);
 +#endif
-     RSA_set_ex_data(rsa, 0, exdata);
+     RSA_set_ex_data(rsa, get_rsa_exdata_idx(), exdata);
      if (BN_hex2bn(&e, ebuf) == 0) {
          fprintf(stderr, "failed to parse e:%s\n", ebuf);
-@@ -838,7 +847,16 @@ static EVP_PKEY *ecdsa_create_pkey(neverbleed_t *nb, s
+@@ -1047,7 +1056,15 @@
      exdata->nb = nb;
      exdata->key_index = key_index;
  
 +#ifdef OPENSSL_NO_ENGINE
-+    ec_key = EC_KEY_new();
-+    if (!ec_key) {
++    if ((ec_key = EC_KEY_new()) == NULL) {
 +        fprintf(stderr, "no memory\n");
 +        abort();
 +    }
@@ -47,32 +50,33 @@ Index: deps/neverbleed/neverbleed.c
 +#else
      ec_key = EC_KEY_new_method(nb->engine);
 +#endif
-     EC_KEY_set_ex_data(ec_key, 0, exdata);
+     EC_KEY_set_ex_data(ec_key, get_ecdsa_exdata_idx(), exdata);
  
      ec_group = EC_GROUP_new_by_curve_name(curve_name);
-@@ -1486,6 +1504,13 @@ int neverbleed_init(neverbleed_t *nb, char *errbuf)
-     pipe_fds[0] = -1;
+@@ -2233,6 +2250,14 @@
+         EC_KEY_METHOD_set_sign(ecdsa_method, ecdsa_sign_proxy, NULL, NULL);
+ #endif
  
-     /* setup engine */
 +#ifdef OPENSSL_NO_ENGINE
-+    nb->rsa_method = rsa_method;
-+    nb->ecdsa_method = NULL;
-+#if OPENSSL_1_1_API
-+    nb->ecdsa_method = ecdsa_method;
++        nb->rsa_method = rsa_method;
++#ifdef NEVERBLEED_ECDSA
++        nb->ecdsa_method = ecdsa_method;
++#else
++        nb->ecdsa_method = NULL;
 +#endif
 +#else
-     if ((nb->engine = ENGINE_new()) == NULL || !ENGINE_set_id(nb->engine, "neverbleed") ||
-         !ENGINE_set_name(nb->engine, "privilege separation software engine") || !ENGINE_set_RSA(nb->engine, rsa_method)
- #if OPENSSL_1_1_API
-@@ -1496,6 +1521,7 @@ int neverbleed_init(neverbleed_t *nb, char *errbuf)
-         goto Fail;
-     }
-     ENGINE_add(nb->engine);
+         if ((nb->engine = ENGINE_new()) == NULL || !ENGINE_set_id(nb->engine, "neverbleed") ||
+             !ENGINE_set_name(nb->engine, "privilege separation software engine") || !ENGINE_set_RSA(nb->engine, rsa_method)
+ #ifdef NEVERBLEED_ECDSA
+@@ -2243,6 +2268,7 @@
+             goto Fail;
+         }
+         ENGINE_add(nb->engine);
 +#endif
+     }
+ #endif
  
-     /* setup thread key */
-     pthread_key_create(&nb->thread_key, dispose_thread_data);
-@@ -1513,9 +1539,11 @@ Fail:
+@@ -2262,10 +2288,12 @@
      }
      if (listen_fd != -1)
          close(listen_fd);
@@ -84,13 +88,23 @@ Index: deps/neverbleed/neverbleed.c
 +#endif
      return -1;
  }
-
-Index: deps/neverbleed/neverbleed.h
---- deps/neverbleed/neverbleed.h.orig
-+++ deps/neverbleed/neverbleed.h
-@@ -34,7 +34,12 @@ extern "C" {
+ 
+--- a/deps/neverbleed/neverbleed.h
++++ b/deps/neverbleed/neverbleed.h
+@@ -24,7 +24,10 @@
+ 
+ #include <pthread.h>
+ #include <sys/un.h>
++#include <openssl/ssl.h>
++#ifndef OPENSSL_NO_ENGINE
+ #include <openssl/engine.h>
++#endif
+ 
+ #ifdef __FreeBSD__
+ #include <pthread_np.h>
+@@ -46,7 +49,12 @@
  #define NEVERBLEED_AUTH_TOKEN_SIZE 32
-
+ 
  typedef struct st_neverbleed_t {
 +#ifdef OPENSSL_NO_ENGINE
 +    RSA_METHOD *rsa_method;
@@ -101,4 +115,3 @@ Index: deps/neverbleed/neverbleed.h
      pid_t daemon_pid;
      struct sockaddr_un sun_;
      pthread_key_t thread_key;
-
