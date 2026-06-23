@@ -1,11 +1,14 @@
 {
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "dependencies": {
     "tsx": "^4"
   },
   "devDependencies": {
-    "@types/node": "^18",
+    "@types/node": "^24",
     "typescript": "^6"
   }
 }
