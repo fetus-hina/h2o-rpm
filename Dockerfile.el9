@@ -1,6 +1,6 @@
 FROM rockylinux:9
 ENV HOME /
-RUN dnf module enable -y ruby:3.1 && \
+RUN dnf module enable -y ruby:3.3 && \
     dnf distro-sync -y && \
     dnf install -y \
         autoconf \
