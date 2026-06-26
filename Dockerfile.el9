@@ -11,6 +11,7 @@ RUN dnf module enable -y ruby:3.3 && \
         gcc-c++ \
         git \
         libtool \
+        libzstd-devel \
         make \
         openssl-devel \
         perl \

@@ -50,6 +50,7 @@ BuildRequires: cmake >= 2.8
 BuildRequires: gcc-c++
 BuildRequires: git
 BuildRequires: libtool
+BuildRequires: libzstd-devel
 BuildRequires: openssl-devel
 BuildRequires: perl
 BuildRequires: pkgconfig
@@ -60,6 +61,7 @@ BuildRequires: zlib-devel
 BuildRequires: perl-IPC-Cmd
 %endif
 Requires: brotli
+Requires: libzstd
 Requires: openssl
 Requires: perl-interpreter
 %if 0%{?rhel} < 9
@@ -111,16 +113,14 @@ pushd %{openssl_build}
   --release \
   --prefix=%{openssl_root} \
   --libdir=%{openssl_root}/lib \
-  --with-rand-seed=devrandom \
+  --with-rand-seed=getrandom \
   enable-pie \
-  no-asm \
   no-comp \
-  no-engine \
   no-shared \
   no-tests \
   no-zlib \
-  CFLAGS="-O2 -march=%{x64_level} -mtune=generic -DNDEBUG" \
-  CXXFLAGS="-O2 -march=%{x64_level} -mtune=generic -DNDEBUG"
+  CFLAGS="-O3 -march=%{x64_level} -mtune=generic -DNDEBUG" \
+  CXXFLAGS="-O3 -march=%{x64_level} -mtune=generic -DNDEBUG"
 make %{?_smp_mflags}
 make install_sw
 popd
@@ -135,6 +135,7 @@ cmake \
     -DWITH_BROTLI=on \
     -DWITH_H2OLOG=off \
     -DWITH_MRUBY=on \
+    -DWITH_ZSTD=on \
 %if %{openssl_static}
     -DOPENSSL_ROOT_DIR=%{openssl_root} \
     -DCMAKE_INCLUDE_PATH=%{openssl_root}/include \
