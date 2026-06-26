@@ -5,6 +5,7 @@ RUN yum update -y && \
         autoconf \
         automake \
         bison \
+        brotli-devel \
         cmake \
         gcc-c++ \
         git \

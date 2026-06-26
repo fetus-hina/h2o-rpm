@@ -6,6 +6,7 @@ RUN dnf module enable -y ruby:3.3 && \
         autoconf \
         automake \
         bison \
+        brotli-devel \
         cmake \
         gcc-c++ \
         git \

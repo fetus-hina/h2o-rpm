@@ -45,19 +45,21 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: bison
+BuildRequires: brotli-devel
 BuildRequires: cmake >= 2.8
+BuildRequires: gcc-c++
 BuildRequires: git
 BuildRequires: libtool
 BuildRequires: openssl-devel
 BuildRequires: perl
 BuildRequires: pkgconfig
-BuildRequires: zlib-devel
-BuildRequires: gcc-c++
 BuildRequires: ruby
 BuildRequires: rubygem-rake
+BuildRequires: zlib-devel
 %if %{openssl_static}
 BuildRequires: perl-IPC-Cmd
 %endif
+Requires: brotli
 Requires: openssl
 Requires: perl-interpreter
 %if 0%{?rhel} < 9
@@ -130,6 +132,7 @@ cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_C_FLAGS="%{cmake_build_flags}" \
     -DCMAKE_CXX_FLAGS="%{cmake_build_flags}" \
+    -DWITH_BROTLI=on \
     -DWITH_H2OLOG=off \
     -DWITH_MRUBY=on \
 %if %{openssl_static}
@@ -144,27 +147,10 @@ cmake \
     .
 make %{?_smp_mflags}
 
-# # for building shared library
-# cmake \
-#     -DWITH_H2OLOG=off \
-#     -DWITH_MRUBY=on \
-#     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-#     -DBUILD_SHARED_LIBS=on \
-#     .
-# make %{?_smp_mflags}
-
 %install
 rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR=$RPM_BUILD_ROOT install
-
-# mkdir -p $RPM_BUILD_ROOT/%{_libdir}
-# mkdir -p $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
-# install -m 644 -p libh2o.pc \
-#         $RPM_BUILD_ROOT%{_libdir}/pkgconfig/libh2o.pc
-# 
-# install -m 644 -p libh2o-evloop.pc \
-#         $RPM_BUILD_ROOT%{_libdir}/pkgconfig/libh2o-evloop.pc
 
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/h2o
 install -m 644 -p $RPM_SOURCE_DIR/h2o.conf \
@@ -267,9 +253,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/lib/tmpfiles.d/h2o.conf
 
 %{_bindir}/h2o
+%{_bindir}/h2o-httpclient
 %{_datadir}/h2o
 %{_datadir}/man
 %exclude %{_bindir}/h2olog
+%exclude %{_libdir}/libh2o-evloop.a
 
 %dir %{docroot}
 %dir %{docroot}/html

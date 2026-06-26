@@ -5,6 +5,7 @@ RUN dnf distro-sync -y && \
         autoconf \
         automake \
         bison \
+        brotli-devel \
         cmake \
         gcc-c++ \
         git \
