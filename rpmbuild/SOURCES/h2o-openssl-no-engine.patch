@@ -7,12 +7,12 @@ EC_KEY_METHOD in neverbleed_t and attach them with RSA_set_method() /
 EC_KEY_set_method() instead of registering an ENGINE. The QAT offload
 support is disabled in that case, as it requires the ENGINE API.
 
-Rebased onto the current H2O master (2026-06).
+Rebased onto the current H2O master (2026-06, neverbleed a191b3c).
 
 --- a/deps/neverbleed/neverbleed.c
 +++ b/deps/neverbleed/neverbleed.c
-@@ -76,7 +76,8 @@
- #include <openssl/ssl.h>
+@@ -80,7 +80,8 @@
+ #endif
  
  #ifdef __linux
 -#if OPENSSL_VERSION_NUMBER >= 0x1010000fL && !defined(LIBRESSL_VERSION_NUMBER) && !defined(OPENSSL_IS_BORINGSSL)
@@ -21,7 +21,7 @@ Rebased onto the current H2O master (2026-06).
  #define USE_OFFLOAD 1
  #endif
  #if defined(OPENSSL_IS_BORINGSSL) && defined(NEVERBLEED_BORINGSSL_USE_QAT)
-@@ -903,7 +904,15 @@
+@@ -915,7 +916,15 @@
      exdata->nb = nb;
      exdata->key_index = key_index;
  
@@ -37,7 +37,7 @@ Rebased onto the current H2O master (2026-06).
      RSA_set_ex_data(rsa, get_rsa_exdata_idx(), exdata);
      if (BN_hex2bn(&e, ebuf) == 0) {
          fprintf(stderr, "failed to parse e:%s\n", ebuf);
-@@ -1047,7 +1056,15 @@
+@@ -1063,7 +1072,15 @@
      exdata->nb = nb;
      exdata->key_index = key_index;
  
@@ -53,7 +53,7 @@ Rebased onto the current H2O master (2026-06).
      EC_KEY_set_ex_data(ec_key, get_ecdsa_exdata_idx(), exdata);
  
      ec_group = EC_GROUP_new_by_curve_name(curve_name);
-@@ -2233,6 +2250,14 @@
+@@ -2261,6 +2278,14 @@
          EC_KEY_METHOD_set_sign(ecdsa_method, ecdsa_sign_proxy, NULL, NULL);
  #endif
  
@@ -68,7 +68,7 @@ Rebased onto the current H2O master (2026-06).
          if ((nb->engine = ENGINE_new()) == NULL || !ENGINE_set_id(nb->engine, "neverbleed") ||
              !ENGINE_set_name(nb->engine, "privilege separation software engine") || !ENGINE_set_RSA(nb->engine, rsa_method)
  #ifdef NEVERBLEED_ECDSA
-@@ -2243,6 +2268,7 @@
+@@ -2271,6 +2296,7 @@
              goto Fail;
          }
          ENGINE_add(nb->engine);
@@ -76,7 +76,7 @@ Rebased onto the current H2O master (2026-06).
      }
  #endif
  
-@@ -2262,10 +2288,12 @@
+@@ -2290,10 +2316,12 @@
      }
      if (listen_fd != -1)
          close(listen_fd);
