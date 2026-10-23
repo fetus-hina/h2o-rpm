@@ -1,3 +1,7 @@
+* Sat Oct 24 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261023.0.6263f6048
+- Update H2O to revision 6263f6048e7144c96f7b1177d5562627739976bd
+- Build with OpenSSL 4.1.0
+
 * Wed Oct 21 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261021.1.cee2cca61
 - Update H2O to revision cee2cca61640b50ba67cbdf8ada930d436cc86cc
 
