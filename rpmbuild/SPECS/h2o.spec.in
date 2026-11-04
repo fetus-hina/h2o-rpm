@@ -64,6 +64,7 @@ Requires: brotli
 Requires: libzstd
 Requires: openssl
 Requires: perl-interpreter
+Requires(pre): shadow-utils
 %if 0%{?rhel} < 9
 BuildRequires: systemd-units
 %endif
@@ -80,6 +81,7 @@ as a library.
 %package doc
 Group: System Environment/Daemons
 Summary: H2O - The optimized HTTP/1, HTTP/2 server
+BuildArch: noarch
 
 %description doc
 Document files for H2O webserver.
@@ -105,6 +107,10 @@ tar -z -x -f %{SOURCE1000} -C %{openssl_build} --strip-components=1
 
 
 %build
+# Export distribution build flags so that bundled builds (e.g. mruby) are PIE
+# as well (done automatically on el10, but not on el8/el9)
+%set_build_flags
+
 # build OpenSSL
 %if %{openssl_static}
 pushd %{openssl_build}
@@ -119,19 +125,22 @@ pushd %{openssl_build}
   no-shared \
   no-tests \
   no-zlib \
-  CFLAGS="-O3 -march=%{x64_level} -mtune=generic -DNDEBUG" \
-  CXXFLAGS="-O3 -march=%{x64_level} -mtune=generic -DNDEBUG"
+  CFLAGS="%{optflags} -O3 -march=%{x64_level} -mtune=generic -DNDEBUG" \
+  CXXFLAGS="%{optflags} -O3 -march=%{x64_level} -mtune=generic -DNDEBUG" \
+  LDFLAGS="%{build_ldflags}"
 make %{?_smp_mflags}
 make install_sw
 popd
 %endif
 
 # Build H2O
-%define cmake_build_flags -O2 -march=%{x64_level} -mtune=generic -fPIE -DH2O_GITREV=%{gitref_s} -DH2O_RPM_REVISION=%{name}-%{version}-%{release}
+%define cmake_build_flags %{optflags} -O2 -march=%{x64_level} -mtune=generic -fPIE -DH2O_GITREV=%{gitref_s} -DH2O_RPM_REVISION=%{name}-%{version}-%{release}
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_C_FLAGS="%{cmake_build_flags}" \
     -DCMAKE_CXX_FLAGS="%{cmake_build_flags}" \
+    -DCMAKE_EXE_LINKER_FLAGS="%{build_ldflags}" \
+    -DCMAKE_SHARED_LINKER_FLAGS="%{build_ldflags}" \
     -DWITH_BROTLI=on \
     -DWITH_H2OLOG=off \
     -DWITH_MRUBY=on \
@@ -143,91 +152,60 @@ cmake \
 %endif
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
 %if 0%{?rhel} >= 10
-    -DZLIB_LIBRARY=/usr/lib64/libz.so.1 \
+    -DZLIB_LIBRARY=%{_libdir}/libz.so.1 \
 %endif
     .
 make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
+# "make install" rebuilds part of mruby; use the same flags as %%build
+%set_build_flags
+rm -rf %{buildroot}
 
-make DESTDIR=$RPM_BUILD_ROOT install
+make DESTDIR=%{buildroot} install
 
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/h2o
-install -m 644 -p $RPM_SOURCE_DIR/h2o.conf \
-        $RPM_BUILD_ROOT%{_sysconfdir}/h2o/h2o.conf
+mkdir -p %{buildroot}%{_sysconfdir}/h2o
+install -m 644 -p %{SOURCE5} \
+        %{buildroot}%{_sysconfdir}/h2o/h2o.conf
 
 # docroot
-mkdir -p $RPM_BUILD_ROOT%{docroot}/html
-install -m 644 -p $RPM_SOURCE_DIR/index.html \
-        $RPM_BUILD_ROOT%{docroot}/html/index.html
+mkdir -p %{buildroot}%{docroot}/html
+install -m 644 -p %{SOURCE1} \
+        %{buildroot}%{docroot}/html/index.html
 
 # Set up /var directories
-mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/h2o
+mkdir -p %{buildroot}%{_localstatedir}/log/h2o
 
 # Install systemd service files
-mkdir -p $RPM_BUILD_ROOT%{_unitdir}
-install -m 644 -p $RPM_SOURCE_DIR/h2o.service \
-	$RPM_BUILD_ROOT%{_unitdir}/h2o.service
+mkdir -p %{buildroot}%{_unitdir}
+install -m 644 -p %{SOURCE4} \
+        %{buildroot}%{_unitdir}/h2o.service
 
-mkdir -p $RPM_BUILD_ROOT/run/h2o
-mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/tmpfiles.d
-install -m 644 -p $RPM_SOURCE_DIR/h2o-tmpfile.conf \
-        $RPM_BUILD_ROOT%{_prefix}/lib/tmpfiles.d/h2o.conf
+mkdir -p %{buildroot}/run/h2o
+mkdir -p %{buildroot}%{_tmpfilesdir}
+install -m 644 -p %{SOURCE6} \
+        %{buildroot}%{_tmpfilesdir}/h2o.conf
 
 # install log rotation stuff
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d
-install -m 644 -p $RPM_SOURCE_DIR/h2o.logrotate \
-	$RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/h2o
+mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
+install -m 644 -p %{SOURCE2} \
+        %{buildroot}%{_sysconfdir}/logrotate.d/h2o
 
-rm -rf $RPM_BUILD_ROOT/usr/include/h2o*
-rm -rf $RPM_BUILD_ROOT/usr/include/picotls*
-rm -rf $RPM_BUILD_ROOT/usr/include/quicly*
-rm -rf $RPM_BUILD_ROOT/usr/lib64/pkgconfig/libh2o*
-
-%define sslcert %{_sysconfdir}/pki/tls/certs/localhost.crt
-%define sslkey %{_sysconfdir}/pki/tls/private/localhost.key
+rm -rf %{buildroot}%{_includedir}/h2o*
+rm -rf %{buildroot}%{_includedir}/picotls*
+rm -rf %{buildroot}%{_includedir}/quicly*
+rm -rf %{buildroot}%{_libdir}/pkgconfig/libh2o*
 
 %pre
+getent group h2o >/dev/null || groupadd -r h2o
+getent passwd h2o >/dev/null || \
+    useradd -r -g h2o -d %{_datadir}/h2o -s /sbin/nologin \
+    -c "H2O web server" h2o
+exit 0
 
 %post
 %systemd_post h2o.service
-
-umask 037
-if [ -f %{sslkey} -o -f %{sslcert} ]; then
-   exit 0
-fi
-
-if [ ! -f %{sslkey} ] ; then
-%{_bindir}/openssl genrsa -rand /proc/apm:/proc/cpuinfo:/proc/dma:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/pci:/proc/rtc:/proc/uptime 2048 > %{sslkey} 2> /dev/null
-fi
-
-FQDN=`hostname`
-if [ "x${FQDN}" = "x" ]; then
-   FQDN=localhost.localdomain
-fi
-
-if [ ! -f %{sslcert} ] ; then
-cat << EOF | %{_bindir}/openssl req -new -key %{sslkey} \
-         -x509 -sha256 -days 365 -set_serial $RANDOM -extensions v3_req \
-         -out %{sslcert} 2>/dev/null
---
-SomeState
-SomeCity
-SomeOrganization
-SomeOrganizationalUnit
-${FQDN}
-root@${FQDN}
-EOF
-fi
-
-if [ -f %{sslkey} ]; then
-   chgrp nobody %{sslkey}
-fi
-
-if [ -f %{sslcert} ]; then
-   chgrp nobody %{sslcert}
-fi
+%tmpfiles_create h2o.conf
 
 %preun
 %systemd_preun h2o.service
@@ -240,7 +218,7 @@ if [ $1 -ge 1 ]; then
 fi
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 
 %files
@@ -251,12 +229,12 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/logrotate.d/h2o
 
 %{_unitdir}/h2o.service
-%{_prefix}/lib/tmpfiles.d/h2o.conf
+%{_tmpfilesdir}/h2o.conf
 
 %{_bindir}/h2o
 %{_bindir}/h2o-httpclient
 %{_datadir}/h2o
-%{_datadir}/man
+%{_mandir}/man*/h2o*
 %exclude %{_bindir}/h2olog
 %exclude %{_libdir}/libh2o-evloop.a
 
@@ -264,12 +242,12 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{docroot}/html
 %config(noreplace) %{docroot}/html/index.html
 
-%attr(0770,root,nobody) %dir /run/h2o
+%ghost %attr(0770,root,h2o) %dir /run/h2o
 %attr(0700,root,root) %dir %{_localstatedir}/log/h2o
 
 
 %files doc
-%{_datadir}/doc/h2o
+%{_defaultdocdir}/h2o
 
 
 %changelog

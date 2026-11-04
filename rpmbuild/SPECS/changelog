@@ -1,3 +1,17 @@
+* Thu Nov 05 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261104.1.1b5ef77eb
+- Build with the distribution hardening flags (PIE, full RELRO, stack
+  protector, _FORTIFY_SOURCE, etc.)
+- Enable LTO on el9 and el10
+- Create the "h2o" system user and run worker processes as "h2o" in the
+  default configuration
+- Revise the default h2o.conf; the HTTPS listener is now provided as a
+  commented-out example
+- No longer generate a self-signed certificate
+  (/etc/pki/tls/{certs/localhost.crt,private/localhost.key}) on install
+- Change the group of /run/h2o to "h2o" and manage it with tmpfiles.d
+- Do not own the man page directories
+- Make the h2o-doc subpackage noarch
+
 * Wed Nov 04 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261104.0.1b5ef77eb
 - Update H2O to revision 1b5ef77ebc3a6ec94ce297a87a9c644fa048ba3f
   - file: do not read past the end of the Range header value after a trailing comma
