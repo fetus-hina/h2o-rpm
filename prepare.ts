@@ -54,8 +54,12 @@ if (oldInfo.H2O_GIT_DATE !== newInfo.H2O_GIT_DATE) {
   );
 }
 
+const mergedPullRequests = changedH2o
+  ? getMergedPullRequests(oldInfo.H2O_GIT_REF, newInfo.H2O_GIT_REF)
+  : [];
+
 exportMakefile(newInfo);
-updateChangelog(newInfo, changedH2o, changedOpenSSL);
+updateChangelog(newInfo, changedH2o, changedOpenSSL, mergedPullRequests);
 
 // ---- Functions ----
 
@@ -89,6 +93,35 @@ function getH2OInfo(): Pick<
     H2O_GIT_REF: match[2],
     H2O_GIT_REF_SHORT: match[3],
   };
+}
+
+function getMergedPullRequests(oldRef: string, newRef: string): string[] {
+  process.stderr.write("Getting merged pull requests...\n");
+
+  let output: string;
+  try {
+    // %x00 separates records; subject and body are separated by %x01
+    output = execSync(
+      `git log --first-parent --merges --reverse --format=%s%x01%b%x00 ${oldRef}..${newRef}`,
+      { cwd: join(__dirname, "h2o-repo"), encoding: "utf-8" },
+    );
+  } catch {
+    process.stderr.write("Failed to get merged pull requests.\n");
+    return [];
+  }
+
+  const results: string[] = [];
+  for (const record of output.split("\0")) {
+    const [subject, body = ""] = record.trim().split("\x01");
+    if (!subject?.match(/^Merge pull request #\d+ from /)) continue;
+
+    const title = body.trim().split(/\r?\n/)[0]?.trim() || subject;
+    results.push(title);
+  }
+
+  process.stderr.write(`Found ${results.length} merged pull requests.\n`);
+
+  return results;
 }
 
 function getLatestVersionOfOpenSSL(): string {
@@ -183,6 +216,7 @@ function updateChangelog(
   newInfo: VersionInfo,
   changedH2o: boolean,
   changedOpenSSL: boolean,
+  mergedPullRequests: string[],
 ): void {
   const now = new Date();
   // RPM changelog date format: "Day Mon DD YYYY" e.g. "Wed Apr 08 2026"
@@ -208,6 +242,10 @@ function updateChangelog(
 
   if (changedH2o) {
     lines.push(`- Update H2O to revision ${newInfo.H2O_GIT_REF}`);
+    for (const pr of mergedPullRequests) {
+      // "%" must be escaped in RPM spec files to avoid macro expansion
+      lines.push(`  - ${pr.replace(/%/g, "%%")}`);
+    }
   }
   if (changedOpenSSL) {
     lines.push(`- Build with OpenSSL ${newInfo.OPENSSL_VERSION}`);
