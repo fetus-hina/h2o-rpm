@@ -1,3 +1,8 @@
+* Wed Nov 04 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261104.0.1b5ef77eb
+- Update H2O to revision 1b5ef77ebc3a6ec94ce297a87a9c644fa048ba3f
+  - file: do not read past the end of the Range header value after a trailing comma
+  - [http2] require SETTINGS as the first client frame
+
 * Tue Nov 03 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261102.0.7bbb3e39b
 - Update H2O to revision 7bbb3e39bf03027344f36b4650e5383c3b6b1014
 
