@@ -42,7 +42,7 @@ rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in rpmbuild/SPECS/changelog
 	[ -d $@.bak ] && rm -rf $@.bak || :
 	[ -d $@ ] && mv $@ $@.bak || :
 	cp Dockerfile.$* Dockerfile
-	tar -czf - Dockerfile rocky-mirror.repo rpmbuild | docker build -t $(IMAGE_NAME) -
+	tar -czf - Dockerfile rpmbuild | docker build -t $(IMAGE_NAME) -
 	docker run --name $(IMAGE_NAME)-tmp $(IMAGE_NAME)
 	mkdir -p tmp
 	docker wait $(IMAGE_NAME)-tmp
