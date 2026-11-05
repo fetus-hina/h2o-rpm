@@ -1,0 +1,48 @@
+Use the system CA bundle (/etc/pki/tls/certs/ca-bundle.crt, provided by
+ca-certificates) instead of the bundled share/h2o/ca-bundle.crt, which is
+outdated (Mozilla data as of 2021-03), and stop installing the latter.
+
+Affected:
+- the default trust store of proxy.reverse.url (HTTPS backends)
+- h2o-httpclient
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -842,7 +842,6 @@
+ INSTALL(PROGRAMS misc/h2olog DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+ INSTALL(PROGRAMS share/h2o/annotate-backtrace-symbols share/h2o/fastcgi-cgi share/h2o/fetch-ocsp-response share/h2o/kill-on-close share/h2o/setuidgid share/h2o/start_server DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/h2o)
+-INSTALL(FILES share/h2o/ca-bundle.crt DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/h2o)
+ INSTALL(FILES share/h2o/status/index.html DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/h2o/status)
+ INSTALL(DIRECTORY doc/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/h2o PATTERN "Makefile" EXCLUDE PATTERN "h2o.8" EXCLUDE PATTERN "README.md" EXCLUDE)
+ INSTALL(FILES doc/h2o.8 DESTINATION ${CMAKE_INSTALL_MANDIR}/man8/)
+--- a/lib/handler/configurator/proxy.c
++++ b/lib/handler/configurator/proxy.c
+@@ -679,7 +679,7 @@
+     if (ctx->pathconf == NULL && ctx->hostconf == NULL) {
+         /* is global conf, setup the default SSL context */
+         self->vars->ssl_ctx = create_ssl_ctx();
+-        char *ca_bundle = h2o_configurator_get_cmd_path("share/h2o/ca-bundle.crt");
++        char *ca_bundle = h2o_configurator_get_cmd_path("/etc/pki/tls/certs/ca-bundle.crt");
+         if (SSL_CTX_load_verify_locations(self->vars->ssl_ctx, ca_bundle, NULL) != 1)
+             h2o_error_printf("Warning: failed to load the default certificates file at %s. Proxying to HTTPS servers may fail.\n",
+                              ca_bundle);
+--- a/src/httpclient.c
++++ b/src/httpclient.c
+@@ -462,14 +462,8 @@
+         h2o_socketpool_register_loop(sockpool, ctx->loop);
+         h2o_httpclient_connection_pool_init(connpool, sockpool);
+ 
+-        /* obtain root */
+-        char *root, *crt_fullpath;
+-        if ((root = getenv("H2O_ROOT")) == NULL)
+-            root = H2O_TO_STR(H2O_ROOT);
+-#define CA_PATH "/share/h2o/ca-bundle.crt"
+-        crt_fullpath = h2o_mem_alloc(strlen(root) + strlen(CA_PATH) + 1);
+-        sprintf(crt_fullpath, "%s%s", root, CA_PATH);
+-#undef CA_PATH
++        /* use the system CA bundle (provided by ca-certificates) */
++        const char *crt_fullpath = "/etc/pki/tls/certs/ca-bundle.crt";
+ 
+         SSL_CTX *ssl_ctx = SSL_CTX_new(SSLv23_client_method());
+         SSL_CTX_load_verify_locations(ssl_ctx, crt_fullpath, NULL);

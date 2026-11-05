@@ -34,6 +34,8 @@ Source6: h2o-tmpfile.conf
 
 Patch2000: h2o-rpm-revision.patch
 Patch2001: h2o-openssl-no-engine.patch
+Patch2002: h2o-system-ca-bundle.patch
+Patch2003: h2o-default-config-path.patch
 
 %if %{openssl_static}
 Source1000: h2o-openssl-%{openssl_version}.tar.gz
@@ -61,6 +63,7 @@ BuildRequires: zlib-devel
 BuildRequires: perl-IPC-Cmd
 %endif
 Requires: brotli
+Requires: ca-certificates
 Requires: libzstd
 Requires: openssl
 Requires: perl-interpreter
@@ -71,7 +74,9 @@ BuildRequires: systemd-units
 Requires(preun): systemd
 Requires(postun): systemd
 Requires(post): systemd
+Requires(posttrans): systemd
 Suggests: h2o-doc = %{version}-%{release}
+Suggests: h2o-httpclient
 
 
 %description
@@ -86,6 +91,15 @@ BuildArch: noarch
 %description doc
 Document files for H2O webserver.
 
+%package httpclient
+Group: Applications/Internet
+Summary: H2O - HTTP/1, HTTP/2 and HTTP/3 client for testing and debugging
+Requires: ca-certificates
+
+%description httpclient
+h2o-httpclient is a command-line HTTP/1, HTTP/2 and HTTP/3 client built on
+libh2o, mainly intended for testing and debugging.
+
 
 
 %prep
@@ -93,9 +107,13 @@ Document files for H2O webserver.
 %if 0%{?rhel} >= 10
 %patch 2000 -p1
 %patch 2001 -p1
+%patch 2002 -p1
+%patch 2003 -p1
 %else
 %patch2000 -p1
 %patch2001 -p1
+%patch2002 -p1
+%patch2003 -p1
 %endif
 
 # prepare openssl
@@ -212,10 +230,20 @@ exit 0
 
 %postun
 %systemd_postun h2o.service
-if [ $1 -ge 1 ]; then
-    systemctl status h2o >/dev/null 2>&1 || exit 0
-    systemctl reload h2o >/dev/null 2>&1 || echo "Binary upgrade failed, please check h2o's error.log"
+
+%posttrans
+# Gracefully restart a running server so that the new binary is used.
+# This is done here rather than in %%postun, because %%postun of the *old*
+# package is the one that runs on upgrade. ExecReload validates the
+# configuration ("h2o -t") first and does not signal the server if it fails.
+if systemctl is-active --quiet h2o.service >/dev/null 2>&1; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    if ! systemctl reload h2o.service >/dev/null 2>&1; then
+        echo "warning: failed to reload h2o.service; the server keeps running with the previous binary and configuration." >&2
+        echo "warning: check \"h2o -t -c %{_sysconfdir}/h2o/h2o.conf\" and \"journalctl -u h2o.service\"." >&2
+    fi
 fi
+exit 0
 
 %clean
 rm -rf %{buildroot}
@@ -232,7 +260,6 @@ rm -rf %{buildroot}
 %{_tmpfilesdir}/h2o.conf
 
 %{_bindir}/h2o
-%{_bindir}/h2o-httpclient
 %{_datadir}/h2o
 %{_mandir}/man*/h2o*
 %exclude %{_bindir}/h2olog
@@ -248,6 +275,9 @@ rm -rf %{buildroot}
 
 %files doc
 %{_defaultdocdir}/h2o
+
+%files httpclient
+%{_bindir}/h2o-httpclient
 
 
 %changelog

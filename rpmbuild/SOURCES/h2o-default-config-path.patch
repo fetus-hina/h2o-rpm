@@ -1,0 +1,26 @@
+Change the default configuration file to /etc/h2o/h2o.conf, where this
+package installs it (the upstream default is ${sysconfdir}/h2o.conf, i.e.
+/etc/h2o.conf), and fix the default shown in h2o(8) accordingly.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -305,7 +305,7 @@
+ ENDIF ()
+ 
+ # setup compile flags
+-SET(CMAKE_C_FLAGS "-g3 ${CC_WARNING_FLAGS} ${CMAKE_C_FLAGS} -DH2O_ROOT=\"${CMAKE_INSTALL_PREFIX}\" -DH2O_CONFIG_PATH=\"${CMAKE_INSTALL_FULL_SYSCONFDIR}/h2o.conf\" -DH2O_LOCALSTATEDIR=\"${CMAKE_INSTALL_FULL_LOCALSTATEDIR}\"")
++SET(CMAKE_C_FLAGS "-g3 ${CC_WARNING_FLAGS} ${CMAKE_C_FLAGS} -DH2O_ROOT=\"${CMAKE_INSTALL_PREFIX}\" -DH2O_CONFIG_PATH=\"${CMAKE_INSTALL_FULL_SYSCONFDIR}/h2o/h2o.conf\" -DH2O_LOCALSTATEDIR=\"${CMAKE_INSTALL_FULL_LOCALSTATEDIR}\"")
+ IF (WITH_DTRACE)
+     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPICOTLS_USE_DTRACE=1 -DQUICLY_USE_DTRACE=1 -DH2O_USE_DTRACE=1")
+ ENDIF ()
+--- a/doc/h2o.8
++++ b/doc/h2o.8
+@@ -13,7 +13,7 @@
+ .SH OPTIONS
+ .TP
+ .BR \-c ", " \-\-conf =\fIFILE\fR
+-configuration file (default: /usr/local/etc/h2o.conf)
++configuration file (default: /etc/h2o/h2o.conf)
+ .TP
+ .BR \-m ", " \-\-mode =\fIMODE\fR
+ specifies one of the following modes:

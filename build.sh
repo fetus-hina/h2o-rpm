@@ -11,7 +11,7 @@ for i in 10 9 8; do
   docker pull ${DISTRO}:${i}
   rm -rf el${i}.build
   make el${i}
-  find el${i}.build -type f -name 'h2o-debug*.rpm' -exec rm -f {} \;
+  find el${i}.build -type f -name 'h2o-*debug*.rpm' -exec rm -f {} \;
   find el${i}.build -type f -name '*.rpm' | xargs rpmsign --resign --key-id=C9F367D2
 
   if [ ${DEPLOY:-0} -ne 0 ]; then
@@ -31,6 +31,7 @@ for i in 10 9 8; do
       # Remove old packages
       find x86_64 -type f -name 'h2o-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
       find x86_64 -type f -name 'h2o-doc-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
+      find x86_64 -type f -name 'h2o-httpclient-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
       find src -type f -name 'h2o-2.*.src.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
 
       for dir in x86_64 src; do

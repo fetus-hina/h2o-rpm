@@ -1,3 +1,17 @@
+* Fri Nov 06 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261105.2.a97e86797
+- Use the system CA bundle (/etc/pki/tls/certs/ca-bundle.crt, provided by
+  ca-certificates) as the default trust store of proxy.reverse.url and
+  h2o-httpclient, instead of the outdated bundled one (Mozilla data as of
+  2021-03); /usr/share/h2o/ca-bundle.crt is no longer installed
+- Change the default configuration file (used when "-c" is omitted) from
+  /etc/h2o.conf to /etc/h2o/h2o.conf, and fix the default shown in h2o(8)
+- Split h2o-httpclient into the h2o-httpclient subpackage (suggested by h2o)
+- Validate the configuration with "h2o -t" before starting and reloading
+  h2o.service; an invalid configuration now makes "systemctl start/reload"
+  fail instead of silently leaving the server unreloaded
+- Reload the running server in %%posttrans instead of %%postun, and warn if
+  the reload fails
+
 * Thu Nov 05 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261105.1.a97e86797
 - Update H2O to revision a97e867972e3147ce3d93d5c4c6f6630eb6b5f26
   - cap the decoded size of field sections at H2O_MAX_REQLEN / H2O_MAX_RESPLEN
