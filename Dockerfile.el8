@@ -1,5 +1,10 @@
 FROM rockylinux:8
 ENV HOME /
+# Use domestic mirrors instead of mirrorlist (see rocky-mirror.repo).
+# reposdir makes dnf ignore /etc/yum.repos.d entirely, so repo files added or
+# restored by a rocky-repos upgrade are never used.
+COPY ./rocky-mirror.repo /etc/yum.repos.mirror.d/rocky-mirror.repo
+RUN echo 'reposdir=/etc/yum.repos.mirror.d' >> /etc/dnf/dnf.conf
 RUN yum update -y && \
     yum install -y \
         autoconf \

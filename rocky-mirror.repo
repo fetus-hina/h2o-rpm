@@ -1,0 +1,35 @@
+# Rocky Linux repositories pinned to domestic (Japan) mirrors.
+# Shared by Dockerfile.el8 / el9 / el10 ($releasever expands to 8, 9 or 10).
+# dnf tries the baseurls in order and falls back to the next one on failure.
+# Both packages (gpgcheck) and repository metadata (repo_gpgcheck) are
+# verified with the Rocky Linux release key shipped in the base image.
+
+[baseos]
+name=Rocky Linux $releasever - BaseOS
+baseurl=https://ftp.iij.ad.jp/pub/linux/rocky/$releasever/BaseOS/$basearch/os/
+        http://ftp.riken.go.jp/Linux/rocky/$releasever/BaseOS/$basearch/os/
+        http://ftp.yz.yamagata-u.ac.jp/pub/Linux/rocky-linux/$releasever/BaseOS/$basearch/os/
+gpgcheck=1
+repo_gpgcheck=1
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-$releasever
+
+[appstream]
+name=Rocky Linux $releasever - AppStream
+baseurl=https://ftp.iij.ad.jp/pub/linux/rocky/$releasever/AppStream/$basearch/os/
+        http://ftp.riken.go.jp/Linux/rocky/$releasever/AppStream/$basearch/os/
+        http://ftp.yz.yamagata-u.ac.jp/pub/Linux/rocky-linux/$releasever/AppStream/$basearch/os/
+gpgcheck=1
+repo_gpgcheck=1
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-$releasever
+
+[extras]
+name=Rocky Linux $releasever - Extras
+baseurl=https://ftp.iij.ad.jp/pub/linux/rocky/$releasever/extras/$basearch/os/
+        http://ftp.riken.go.jp/Linux/rocky/$releasever/extras/$basearch/os/
+        http://ftp.yz.yamagata-u.ac.jp/pub/Linux/rocky-linux/$releasever/extras/$basearch/os/
+gpgcheck=1
+repo_gpgcheck=1
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-$releasever

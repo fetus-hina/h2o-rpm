@@ -59,6 +59,7 @@ DEPLOY=1 TEST=1 ./build.sh  # h2o-rolling-testing へデプロイ
 - OpenSSL は各 RPM に静的リンクされる(`openssl_static`)。対象バージョン範囲やパッケージャ情報は `prepare.ts` 冒頭の Configuration 定数で管理
 - ディストリ差分は `Dockerfile.elN` と spec 内の `%if 0%{?rhel}` 分岐に集約されている
   - ベースイメージ: el8 / el9 は `rockylinux:N`、el10 は `rockylinux/rockylinux:10`
+  - dnf のリポジトリは全ディストリ共通の `rocky-mirror.repo`(IIJ → 理研 → 山形大の順に baseurl を列挙、`repo_gpgcheck=1`)を使う。`dnf.conf` の `reposdir` で `/etc/yum.repos.mirror.d` のみを読ませ、標準の `/etc/yum.repos.d`(mirrorlist)は使わない。Makefile がビルドコンテキストに含める
   - `%dist` は `.elN.jp3cki`(`Dockerfile.elN` で `.rpmmacros` に設定)
   - ビルド対象の x86-64 レベル: el8 は `x86-64`、el9 は `x86-64-v2`、el10 は `x86-64-v3`
 - リリースコミットはパッケージバージョン文字列(例: `2.3.0-1.git20260610.0.ed7899d1c`)をそのままコミットメッセージにする慣習
