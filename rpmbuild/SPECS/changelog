@@ -1,3 +1,7 @@
+* Thu Nov 05 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261105.1.a97e86797
+- Update H2O to revision a97e867972e3147ce3d93d5c4c6f6630eb6b5f26
+  - cap the decoded size of field sections at H2O_MAX_REQLEN / H2O_MAX_RESPLEN
+
 * Thu Nov 05 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261105.0.ca3349d72
 - Update H2O to revision ca3349d727fea8876cd1b67909cebeeb68eb362e
   - socketpool: decrement the connection count when discarding a dead pooled connection
