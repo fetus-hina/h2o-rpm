@@ -50,7 +50,7 @@ DEPLOY=1 TEST=1 ./build.sh  # h2o-rolling-testing へデプロイ
 
 3. **`build.sh`**(リリース)
    - el10 → el9 → el8 の順にベースイメージを `docker pull` してビルドし、debug RPM を除去、鍵 `C9F367D2` で `rpmsign --resign`
-   - `DEPLOY=1` で `/var/www/sites/fetus.jp/rpm.fetus.jp/public_html/<h2o-rolling|h2o-rolling-testing>/elN/` 配下にコピーし、古いパッケージを世代管理(各 5 世代)した上で `createrepo` を実行し、`md5sum.txt` / `sha1sum.txt` / `sha256sum.txt` を生成
+   - `DEPLOY=1` で `/var/www/sites/fetus.jp/rpm.fetus.jp/public_html/<h2o-rolling|h2o-rolling-testing>/elN/` 配下にコピーし、古いパッケージを世代管理(各 10 世代)した上で `createrepo` を実行し、`md5sum.txt` / `sha1sum.txt` / `sha256sum.txt` を生成
 
 ## 編集時の注意
 

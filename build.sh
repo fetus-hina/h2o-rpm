@@ -29,10 +29,10 @@ for i in 10 9 8; do
 
     pushd /var/www/sites/fetus.jp/rpm.fetus.jp/public_html/${DEPLOY_TARGET}/el${i}
       # Remove old packages
-      find x86_64 -type f -name 'h2o-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
-      find x86_64 -type f -name 'h2o-doc-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
-      find x86_64 -type f -name 'h2o-httpclient-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
-      find src -type f -name 'h2o-2.*.src.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +6 | xargs rm -f
+      find x86_64 -type f -name 'h2o-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +11 | xargs rm -f
+      find x86_64 -type f -name 'h2o-doc-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +11 | xargs rm -f
+      find x86_64 -type f -name 'h2o-httpclient-2.*.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +11 | xargs rm -f
+      find src -type f -name 'h2o-2.*.src.rpm' -exec stat --format='%Y:%n' {} \; | sort -nr | cut -d: -f2- | tail -n +11 | xargs rm -f
 
       for dir in x86_64 src; do
         pushd ${dir}
