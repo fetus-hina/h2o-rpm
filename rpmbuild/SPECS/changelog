@@ -1,3 +1,7 @@
+* Thu Nov 05 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261105.0.ca3349d72
+- Update H2O to revision ca3349d727fea8876cd1b67909cebeeb68eb362e
+  - socketpool: decrement the connection count when discarding a dead pooled connection
+
 * Thu Nov 05 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261104.1.1b5ef77eb
 - Build with the distribution hardening flags (PIE, full RELRO, stack
   protector, _FORTIFY_SOURCE, etc.)
