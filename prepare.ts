@@ -61,6 +61,8 @@ const mergedPullRequests = changedH2o
 exportMakefile(newInfo);
 updateChangelog(newInfo, changedH2o, changedOpenSSL, mergedPullRequests);
 
+process.stdout.write(`Ready to build ${formatPackageVersion(newInfo)}\n`);
+
 // ---- Functions ----
 
 function getH2OInfo(): Pick<
@@ -230,11 +232,7 @@ function updateChangelog(
   // toLocaleDateString gives "Wed, Apr 08, 2026" — remove commas
   const rpmDate = dateStr.replace(/,/g, "");
 
-  const version = PACKAGE_VERSION_FORMAT.replace(
-    /\{([A-Z0-9_]+)\}/g,
-    (original, key: string) =>
-      (newInfo as unknown as Record<string, string>)[key] ?? original,
-  );
+  const version = formatPackageVersion(newInfo);
 
   const lines: string[] = [
     `* ${rpmDate} ${PACKAGE_BUILDER_NAME} <${PACKAGE_BUILDER_EMAIL}> - ${version}`,
@@ -261,6 +259,14 @@ function updateChangelog(
 }
 
 // ---- Utilities ----
+
+function formatPackageVersion(info: VersionInfo): string {
+  return PACKAGE_VERSION_FORMAT.replace(
+    /\{([A-Z0-9_]+)\}/g,
+    (original, key: string) =>
+      (info as unknown as Record<string, string>)[key] ?? original,
+  );
+}
 
 /**
  * Compare two version strings (e.g. "3.1.2" vs "3.2.0").
