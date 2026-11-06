@@ -44,7 +44,9 @@ const changedH2o = oldInfo.H2O_GIT_REF !== newInfo.H2O_GIT_REF;
 const changedOpenSSL = oldInfo.OPENSSL_VERSION !== newInfo.OPENSSL_VERSION;
 if (!changedH2o && !changedOpenSSL) {
   process.stderr.write(
-    styleText("yellow", "Nothing changed.", { stream: process.stderr }) + "\n",
+    styleText("magentaBright", "Nothing changed.", {
+      stream: process.stderr,
+    }) + "\n",
   );
   process.exit(0);
 }
@@ -65,8 +67,8 @@ exportMakefile(newInfo);
 updateChangelog(newInfo, changedH2o, changedOpenSSL, mergedPullRequests);
 
 process.stdout.write(
-  styleText("green", "Ready to build ", { stream: process.stdout }) +
-    styleText(["bold", "green"], formatPackageVersion(newInfo), {
+  styleText("greenBright", "Ready to build ", { stream: process.stdout }) +
+    styleText(["bold", "greenBright"], formatPackageVersion(newInfo), {
       stream: process.stdout,
     }) +
     "\n",
@@ -269,7 +271,7 @@ function updateChangelog(
 
 function printError(message: string): void {
   process.stderr.write(
-    styleText("red", message, { stream: process.stderr }) + "\n",
+    styleText("redBright", message, { stream: process.stderr }) + "\n",
   );
 }
 
