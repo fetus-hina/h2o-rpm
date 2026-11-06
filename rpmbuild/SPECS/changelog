@@ -1,3 +1,11 @@
+* Sat Nov 07 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261106.0.f35c735eb
+- Update H2O to revision f35c735ebe0657235702c2b91912542052cc05db
+  - add knobs for running the CI using the self-hosted runner
+  - http3client: do not call quicly_stream_sync_sendbuf from within on_send_emit
+  - http2client: reject informational responses carrying END_STREAM
+  - http1client: reject 101 responses to requests that are not upgrades
+  - http1client: do not forward bytes of a read that fails chunked decoding
+
 * Fri Nov 06 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261105.2.a97e86797
 - Use the system CA bundle (/etc/pki/tls/certs/ca-bundle.crt, provided by
   ca-certificates) as the default trust store of proxy.reverse.url and
