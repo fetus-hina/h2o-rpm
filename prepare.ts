@@ -3,6 +3,7 @@ import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { styleText } from "node:util";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -42,7 +43,9 @@ const newInfo: VersionInfo = {
 const changedH2o = oldInfo.H2O_GIT_REF !== newInfo.H2O_GIT_REF;
 const changedOpenSSL = oldInfo.OPENSSL_VERSION !== newInfo.OPENSSL_VERSION;
 if (!changedH2o && !changedOpenSSL) {
-  process.stderr.write("Nothing changed.\n");
+  process.stderr.write(
+    styleText("yellow", "Nothing changed.", { stream: process.stderr }) + "\n",
+  );
   process.exit(0);
 }
 
@@ -61,7 +64,13 @@ const mergedPullRequests = changedH2o
 exportMakefile(newInfo);
 updateChangelog(newInfo, changedH2o, changedOpenSSL, mergedPullRequests);
 
-process.stdout.write(`Ready to build ${formatPackageVersion(newInfo)}\n`);
+process.stdout.write(
+  styleText("green", "Ready to build ", { stream: process.stdout }) +
+    styleText(["bold", "green"], formatPackageVersion(newInfo), {
+      stream: process.stdout,
+    }) +
+    "\n",
+);
 
 // ---- Functions ----
 
@@ -78,8 +87,7 @@ function getH2OInfo(): Pick<
 
   const match = output.match(/^([^/]+)\/([0-9a-f]+)\/([0-9a-f]+)$/);
   if (!match) {
-    process.stderr.write("Failed to parse H2O info.\n");
-    process.exit(1);
+    fatal("Failed to parse H2O info.");
   }
 
   // Parse the ISO date and format as Ymd in Asia/Tokyo
@@ -108,7 +116,7 @@ function getMergedPullRequests(oldRef: string, newRef: string): string[] {
       { cwd: join(__dirname, "h2o-repo"), encoding: "utf-8" },
     );
   } catch {
-    process.stderr.write("Failed to get merged pull requests.\n");
+    printError("Failed to get merged pull requests.");
     return [];
   }
 
@@ -151,8 +159,7 @@ function getLatestVersionOfOpenSSL(): string {
   }
 
   if (versions.length === 0) {
-    process.stderr.write("No available version of OpenSSL.\n");
-    process.exit(1);
+    fatal("No available version of OpenSSL.");
   }
 
   versions.sort(compareVersions);
@@ -171,7 +178,7 @@ function importMakefile(): VersionInfo {
   const pos1 = makefile.indexOf(VERSION_BLOCK_TAG_BEGIN);
   const pos2 = makefile.indexOf(VERSION_BLOCK_TAG_END);
   if (pos1 === -1 || pos2 === -1) {
-    throw new Error("Failed to find version block");
+    fatal("Failed to find version block.");
   }
 
   const block = makefile.slice(
@@ -198,7 +205,7 @@ function exportMakefile(info: VersionInfo): void {
   const pos1 = oldMakefile.indexOf(VERSION_BLOCK_TAG_BEGIN);
   const pos2 = oldMakefile.indexOf(VERSION_BLOCK_TAG_END);
   if (pos1 === -1 || pos2 === -1) {
-    throw new Error("Failed to find version block");
+    fatal("Failed to find version block.");
   }
 
   const newMakefile =
@@ -259,6 +266,17 @@ function updateChangelog(
 }
 
 // ---- Utilities ----
+
+function printError(message: string): void {
+  process.stderr.write(
+    styleText("red", message, { stream: process.stderr }) + "\n",
+  );
+}
+
+function fatal(message: string): never {
+  printError(message);
+  process.exit(1);
+}
 
 function formatPackageVersion(info: VersionInfo): string {
   return PACKAGE_VERSION_FORMAT.replace(
