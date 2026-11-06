@@ -14,12 +14,14 @@ IMAGE_NAME := h2o-23-package
 el8: IMAGE_NAME := $(IMAGE_NAME)-el8
 el9: IMAGE_NAME := $(IMAGE_NAME)-el9
 el10: IMAGE_NAME := $(IMAGE_NAME)-el10
+eln: IMAGE_NAME := $(IMAGE_NAME)-eln
 
-.PHONY: all el8 el9 el10
-all: el8 el9 el10
+.PHONY: all el8 el9 el10 eln
+all: el8 el9 el10 eln
 el8: el8.build
 el9: el9.build
 el10: el10.build
+eln: eln.build
 
 rpmbuild/SOURCES/$(SOURCE_ARCHIVE):
 	curl -fsSL https://github.com/h2o/h2o/archive/$(H2O_GIT_REF).tar.gz -o $@
@@ -55,4 +57,4 @@ rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in rpmbuild/SPECS/changelog
 .PHONY: clean
 clean:
 	rm -rf *.build.bak *.build
-	$(PODMAN) rmi --ignore $(IMAGE_NAME)-el8 $(IMAGE_NAME)-el9 $(IMAGE_NAME)-el10
+	$(PODMAN) rmi --ignore $(IMAGE_NAME)-el8 $(IMAGE_NAME)-el9 $(IMAGE_NAME)-el10 $(IMAGE_NAME)-eln

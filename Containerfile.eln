@@ -1,0 +1,36 @@
+FROM quay.io/fedora/eln:latest
+ENV HOME /
+# Fedora ELN (the next Enterprise Linux, %rhel = 11) is mirrored only by a few
+# sites outside Japan, so the default metalink repositories are used as is.
+RUN dnf distro-sync -y && \
+    dnf install -y \
+        autoconf \
+        automake \
+        bison \
+        brotli-devel \
+        cmake \
+        gcc-c++ \
+        git \
+        libtool \
+        libzstd-devel \
+        make \
+        openssl-devel \
+        perl \
+        redhat-rpm-config \
+        rpm-build \
+        rpmdevtools \
+        ruby \
+        ruby-devel \
+        rubygem-rake \
+        systemd-rpm-macros \
+        tar \
+        zlib-ng-compat-devel \
+          && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
+RUN rpmdev-setuptree
+RUN echo '%dist .eln%{eln}.jp3cki' >> /.rpmmacros
+COPY ./ /rpmbuild/
+RUN chown -R root:root /rpmbuild
+RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
+CMD ["/bin/true"]
