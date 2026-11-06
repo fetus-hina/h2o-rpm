@@ -1,3 +1,11 @@
+* Sat Nov 07 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261106.1.f35c735eb
+- Declare the "h2o" user and group in /usr/lib/sysusers.d/h2o.conf; the
+  package now provides user(h2o) and group(h2o) on RPM 4.19 and later
+- Use /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem as the system CA
+  bundle instead of the legacy /etc/pki/tls/certs/ca-bundle.crt, which is
+  no longer provided on Fedora ELN
+- Support building for Fedora ELN
+
 * Sat Nov 07 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261106.0.f35c735eb
 - Update H2O to revision f35c735ebe0657235702c2b91912542052cc05db
   - add knobs for running the CI using the self-hosted runner
