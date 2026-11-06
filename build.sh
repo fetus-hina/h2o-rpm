@@ -3,14 +3,9 @@
 set -eu
 
 for i in 10 9 8; do
-  if [ $i -eq 10 ]; then
-    DISTRO=rockylinux/rockylinux
-  else
-    DISTRO=rockylinux
-  fi
-  docker pull ${DISTRO}:${i}
   rm -rf el${i}.build
-  make el${i}
+  # Always pull the latest base image (FROM in Containerfile.elN)
+  make el${i} PULL=always
   find el${i}.build -type f -name 'h2o-*debug*.rpm' -exec rm -f {} \;
   find el${i}.build -type f -name '*.rpm' | xargs rpmsign --resign --key-id=C9F367D2
 

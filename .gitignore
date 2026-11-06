@@ -1,6 +1,5 @@
 *.build
 *.build.bak
-Dockerfile
 h2o-repo
 node_modules
 rpmbuild/SOURCES/*.tar.gz

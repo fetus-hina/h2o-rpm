@@ -7,7 +7,9 @@ OPENSSL_VERSION := 4.1.0
 # ---- END VERSION BLOCK ----
 
 SOURCE_ARCHIVE := h2o-$(H2O_GIT_REF).tar.gz
-TARGZ_FILE := h2o.tar.gz
+PODMAN ?= podman
+# Base image pull policy for "podman build" (missing / newer / always / never)
+PULL ?= missing
 IMAGE_NAME := h2o-23-package
 el8: IMAGE_NAME := $(IMAGE_NAME)-el8
 el9: IMAGE_NAME := $(IMAGE_NAME)-el9
@@ -41,21 +43,16 @@ rpmbuild/SPECS/h2o.spec: rpmbuild/SPECS/h2o.spec.in rpmbuild/SPECS/changelog
 %.build: rpmbuild/SPECS/h2o.spec rpmbuild/SOURCES/$(SOURCE_ARCHIVE) rpmbuild/SOURCES/h2o-openssl-$(OPENSSL_VERSION).tar.gz
 	[ -d $@.bak ] && rm -rf $@.bak || :
 	[ -d $@ ] && mv $@ $@.bak || :
-	cp Dockerfile.$* Dockerfile
-	tar -czf - Dockerfile rpmbuild | docker build -t $(IMAGE_NAME) -
-	docker run --name $(IMAGE_NAME)-tmp $(IMAGE_NAME)
-	mkdir -p tmp
-	docker wait $(IMAGE_NAME)-tmp
-	docker cp $(IMAGE_NAME)-tmp:/tmp/$(TARGZ_FILE) tmp
-	docker rm $(IMAGE_NAME)-tmp
+	$(PODMAN) build --pull=$(PULL) -t $(IMAGE_NAME) -f Containerfile.$* rpmbuild
+	$(PODMAN) rm --ignore $(IMAGE_NAME)-tmp
+	$(PODMAN) create --name $(IMAGE_NAME)-tmp $(IMAGE_NAME)
 	mkdir $@
-	tar -xzf tmp/$(TARGZ_FILE) -C $@
-	rm -rf tmp Dockerfile
-	docker images | grep -q $(IMAGE_NAME) && docker rmi $(IMAGE_NAME) || true
+	$(PODMAN) cp $(IMAGE_NAME)-tmp:/rpmbuild/RPMS $@/
+	$(PODMAN) cp $(IMAGE_NAME)-tmp:/rpmbuild/SRPMS $@/
+	$(PODMAN) rm $(IMAGE_NAME)-tmp
+	$(PODMAN) rmi --ignore $(IMAGE_NAME)
 
 .PHONY: clean
 clean:
-	rm -rf *.build.bak *.build tmp Dockerfile
-	docker images | grep -q $(IMAGE_NAME)-el8 && docker rmi $(IMAGE_NAME)-el8 || true
-	docker images | grep -q $(IMAGE_NAME)-el9 && docker rmi $(IMAGE_NAME)-el9 || true
-	docker images | grep -q $(IMAGE_NAME)-el10 && docker rmi $(IMAGE_NAME)-el10 || true
+	rm -rf *.build.bak *.build
+	$(PODMAN) rmi --ignore $(IMAGE_NAME)-el8 $(IMAGE_NAME)-el9 $(IMAGE_NAME)-el10

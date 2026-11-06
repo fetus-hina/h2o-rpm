@@ -1,5 +1,5 @@
 # Rocky Linux repositories pinned to domestic (Japan) mirrors.
-# Shared by Dockerfile.el8 / el9 / el10 ($releasever expands to 8, 9 or 10).
+# Shared by Containerfile.el8 / el9 / el10 ($releasever expands to 8, 9 or 10).
 # dnf tries the baseurls in order and falls back to the next one on failure.
 # Both packages (gpgcheck) and repository metadata (repo_gpgcheck) are
 # verified with the Rocky Linux release key shipped in the base image.

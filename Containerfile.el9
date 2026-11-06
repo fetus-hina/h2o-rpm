@@ -1,11 +1,12 @@
-FROM rockylinux/rockylinux:10
+FROM quay.io/rockylinux/rockylinux:9
 ENV HOME /
 # Use domestic mirrors instead of mirrorlist (see rpmbuild/container/rocky-mirror.repo).
 # reposdir makes dnf ignore /etc/yum.repos.d entirely, so repo files added or
 # restored by a rocky-repos upgrade are never used.
-COPY ./rpmbuild/container/rocky-mirror.repo /etc/yum.repos.mirror.d/rocky-mirror.repo
+COPY ./container/rocky-mirror.repo /etc/yum.repos.mirror.d/rocky-mirror.repo
 RUN echo 'reposdir=/etc/yum.repos.mirror.d' >> /etc/dnf/dnf.conf
-RUN dnf distro-sync -y && \
+RUN dnf module enable -y ruby:3.3 && \
+    dnf distro-sync -y && \
     dnf install -y \
         autoconf \
         automake \
@@ -27,14 +28,13 @@ RUN dnf distro-sync -y && \
         rubygem-rake \
         systemd-rpm-macros \
         tar \
-        zlib-ng-compat-devel \
+        zlib-devel \
           && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 RUN rpmdev-setuptree
-RUN echo '%dist .el10.jp3cki' >> /.rpmmacros
-ADD ./rpmbuild/ /rpmbuild/
+RUN echo '%dist .el9.jp3cki' >> /.rpmmacros
+COPY ./ /rpmbuild/
 RUN chown -R root:root /rpmbuild
 RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
-RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
 CMD ["/bin/true"]

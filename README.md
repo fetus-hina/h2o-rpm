@@ -17,7 +17,8 @@ https://rpm.fetus.jp/h2o-rolling/
 
 ## How to build RPM
 
-If you have a docker environment, you can build RPMs by just running
+If you have a Podman environment (rootless is fine), you can build RPMs by just
+running
 
 ```bash
 make
@@ -40,7 +41,7 @@ build options.
 
 Built RPMs are placed under the `elN.build` directory (e.g. `el9.build`).
 
-To remove build artifacts and Docker images, run
+To remove build artifacts and container images, run
 
 ```bash
 make clean
