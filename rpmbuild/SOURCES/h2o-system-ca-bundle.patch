@@ -1,6 +1,8 @@
-Use the system CA bundle (/etc/pki/tls/certs/ca-bundle.crt, provided by
-ca-certificates) instead of the bundled share/h2o/ca-bundle.crt, which is
-outdated (Mozilla data as of 2021-03), and stop installing the latter.
+Use the system CA bundle (/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem,
+provided by ca-certificates) instead of the bundled share/h2o/ca-bundle.crt,
+which is outdated (Mozilla data as of 2021-03), and stop installing the latter.
+The legacy path /etc/pki/tls/certs/ca-bundle.crt is not used because it is no
+longer provided on Fedora ELN (the next Enterprise Linux).
 
 Affected:
 - the default trust store of proxy.reverse.url (HTTPS backends)
@@ -23,7 +25,7 @@ Affected:
          /* is global conf, setup the default SSL context */
          self->vars->ssl_ctx = create_ssl_ctx();
 -        char *ca_bundle = h2o_configurator_get_cmd_path("share/h2o/ca-bundle.crt");
-+        char *ca_bundle = h2o_configurator_get_cmd_path("/etc/pki/tls/certs/ca-bundle.crt");
++        char *ca_bundle = h2o_configurator_get_cmd_path("/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem");
          if (SSL_CTX_load_verify_locations(self->vars->ssl_ctx, ca_bundle, NULL) != 1)
              h2o_error_printf("Warning: failed to load the default certificates file at %s. Proxying to HTTPS servers may fail.\n",
                               ca_bundle);
@@ -42,7 +44,7 @@ Affected:
 -        sprintf(crt_fullpath, "%s%s", root, CA_PATH);
 -#undef CA_PATH
 +        /* use the system CA bundle (provided by ca-certificates) */
-+        const char *crt_fullpath = "/etc/pki/tls/certs/ca-bundle.crt";
++        const char *crt_fullpath = "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem";
  
          SSL_CTX *ssl_ctx = SSL_CTX_new(SSLv23_client_method());
          SSL_CTX_load_verify_locations(ssl_ctx, crt_fullpath, NULL);
