@@ -31,6 +31,7 @@ Source2: h2o.logrotate
 Source4: h2o.service
 Source5: h2o.conf
 Source6: h2o-tmpfile.conf
+Source7: h2o.sysusers
 
 Patch2000: h2o-rpm-revision.patch
 Patch2001: h2o-openssl-no-engine.patch
@@ -204,6 +205,14 @@ mkdir -p %{buildroot}%{_tmpfilesdir}
 install -m 644 -p %{SOURCE6} \
         %{buildroot}%{_tmpfilesdir}/h2o.conf
 
+# Declare the h2o user/group via sysusers.d, so that RPM generates
+# "Provides: user(h2o)/group(h2o)" (RPM 6 requires group(h2o) for the
+# files owned by the group). The user is still created in %%pre for the
+# versions of RPM that do not process sysusers.d by themselves.
+mkdir -p %{buildroot}%{_sysusersdir}
+install -m 644 -p %{SOURCE7} \
+        %{buildroot}%{_sysusersdir}/h2o.conf
+
 # install log rotation stuff
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m 644 -p %{SOURCE2} \
@@ -258,6 +267,7 @@ rm -rf %{buildroot}
 
 %{_unitdir}/h2o.service
 %{_tmpfilesdir}/h2o.conf
+%{_sysusersdir}/h2o.conf
 
 %{_bindir}/h2o
 %{_datadir}/h2o
