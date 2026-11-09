@@ -1,3 +1,9 @@
+* Mon Nov 09 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261109.0.2fd73eaf1
+- Update H2O to revision 2fd73eaf1a30d4a6d2ed8089f9313e46a08c8f1e
+  - http3client: honor max_buffer_size
+  - hpack, qpack: treat invalid characters in :method and :path as soft errors
+  - fastcgi: limit the size of response headers
+
 * Mon Nov 09 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261108.0.8c26dae33
 - Update H2O to revision 8c26dae337fd75494d514dd89ce5ae73e774ba65
   - update yoml
