@@ -1,3 +1,7 @@
+* Tue Nov 10 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261110.0.c2fc50698
+- Update H2O to revision c2fc50698d9781b7f27f1996b05ae039722aca0b
+  - Tag QUIC session tickets after the transport parameters are final
+
 * Mon Nov 09 2026 AIZAWA Hina <hina@fetus.jp> - 2.3.0-1.git20261109.0.2fd73eaf1
 - Update H2O to revision 2fd73eaf1a30d4a6d2ed8089f9313e46a08c8f1e
   - http3client: honor max_buffer_size
